@@ -30,7 +30,41 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		_meeting, _ := cmd.Flags().GetString("meeting")
-
+		_par_, _ := cmd.Flags().GetString("par")
+		_command_, _ := cmd.Flags().GetString("command")
+		users = WRITEUSER()
+		meetings = READMEETINGS()
+		current = identity.CurrentUserName
+		meetingSize = len(meetings)
+		for i := 0; i < meetingSize; i++ {
+			if (meetings[i].Title == _meeting_) {
+				if meetings[i].Sponsor == _users_ {
+					if _command_ == "a" {
+						parSize = len(meetings[i].Paticipators)
+						for j := 0; j < parSize; j++ {
+							if meetings[i].Paticipators[j] == _par_ {
+								meetings[i].Paticipators = append(meetings[i].Paticipators[:j], meetings[i].Paticipators[j+1:]...)
+								log.println("Delete Success!")
+								return ;
+							}
+						}
+						log.println("Dont have particapator name " + _par_);
+					} else {
+						parSize = len(meetings[i].Paticipators)
+						for j := 0; j < parSize; j++ {
+							if meetings[i].Paticipators[j] == _par_ {
+								log.println("This Participator has already in meeting!")
+								return ;
+							}
+						}
+						meetings[i].Paticipators = append(meetings[i].Paticipators, _par_)
+						log.println("Add Success!")
+					}
+				} else {
+					log.println("Dont have privilege!")
+				}
+			}
+		}
 	},
 }
 
@@ -46,5 +80,7 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// changeMeetingParCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	//得到会议名称[-meeting meeting] 指令名称[-command a/d] 用户名称[-par name]
 	changeMeetingParCmd.Flags().StringP("meeting", "m", "default meeting", "change meeting participants")
+	
 }
