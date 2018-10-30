@@ -74,6 +74,8 @@ to quickly create a Cobra application.`,
 					//删除会议
 					meetings = append(meetings[:i], meetings[i+1:]...)
 					log.println("Delete Meeting Success!")
+					entity.WRITEUSER(users)
+					entity.WRITEMEETINGS(meetings)
 					return 
 				}
 			}
