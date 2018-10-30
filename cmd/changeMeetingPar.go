@@ -44,7 +44,7 @@ to quickly create a Cobra application.`,
 						for j := 0; j < parSize; j++ {
 							if meetings[i].Paticipators[j] == _par_ {
 								meetings[i].Paticipators = append(meetings[i].Paticipators[:j], meetings[i].Paticipators[j+1:]...)
-								log.println("Delete Success!")
+								log.println("Delete success!")
 								return ;
 							}
 						}
@@ -53,12 +53,11 @@ to quickly create a Cobra application.`,
 						parSize = len(meetings[i].Paticipators)
 						for j := 0; j < parSize; j++ {
 							if meetings[i].Paticipators[j] == _par_ {
-								log.println("This Participator has already in meeting!")
 								return ;
 							}
 						}
 						meetings[i].Paticipators = append(meetings[i].Paticipators, _par_)
-						log.println("Add Success!")
+						log.println("Add success!")
 					}
 				} else {
 					log.println("Dont have privilege!")
