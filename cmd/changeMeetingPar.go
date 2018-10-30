@@ -45,7 +45,7 @@ to quickly create a Cobra application.`,
 							if meetings[i].Paticipators[j] == _par_ {
 								meetings[i].Paticipators = append(meetings[i].Paticipators[:j], meetings[i].Paticipators[j+1:]...)
 								log.println("Delete success!")
-								return ;
+								return 
 							}
 						}
 						log.println("Dont have particapator name " + _par_);
@@ -53,7 +53,7 @@ to quickly create a Cobra application.`,
 						parSize = len(meetings[i].Paticipators)
 						for j := 0; j < parSize; j++ {
 							if meetings[i].Paticipators[j] == _par_ {
-								return ;
+								return 
 							}
 						}
 						meetings[i].Paticipators = append(meetings[i].Paticipators, _par_)
