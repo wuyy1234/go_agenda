@@ -16,7 +16,7 @@ package cmd
 
 import (
 	"agenda/entity"
-	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -36,9 +36,14 @@ to quickly create a Cobra application.`,
 		_password, _ := cmd.Flags().GetString("password")
 		_email, _ := cmd.Flags().GetString("email")
 		_phone, _ := cmd.Flags().GetString("phone")
-		fmt.Println("register called by "+_username, _password, _email, _phone)
+		log.Println("register called by "+_username, _password, _email, _phone)
 		users := entity.READUSERS()
-
+		for i := 0; i < len(users); i++ {
+			if users[i].Username == _username {
+				log.Println("user already registered")
+				return
+			}
+		}
 		aUser := entity.User{Username: _username, Password: _password, Email: _email, Phone: _phone}
 		users = append(users, aUser)
 		entity.WRITEUSER(users)
