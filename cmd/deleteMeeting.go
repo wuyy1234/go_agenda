@@ -31,7 +31,55 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("deleteMeeting called")
+		_meeting, _ := cmd.Flags().GetString("meeting")
+		users = entity.READUSERS()
+		meetings = entity.READMEETINGS()
+		current = entity.CurrentUserName
+		meetingSize = len(meetings)
+		for i := 0; i < meetingSize; i++ {
+			if (meetings[i].Title == _meeting_) {
+				//判断是否是会议发起人
+				if meetings[i].Sponsor == current {
+					//删除所有与会人的会议记录
+					parSize = len(meetings[i].Paticipators)
+					for j := 0; j < parSize; j++ {
+						par = meetings[i].Paticipators[j]
+						userSize = len(users)
+						for k := 0; k < userSize; k++ {
+							if users[k].Username == par {
+								//删除该与会人的会议记录
+								parMeetingSize = len(users[k].ParticipateMeeting)
+								for f := 0; f < parMeetingSize; f++ {
+									if users[k].ParticipateMeeting[f] == _meeting_ {
+										users[k].ParticipateMeeting = append(users[k].ParticipateMeeting[:f], users[k].ParticipateMeeting[f+1:]...)
+									}
+								}
+							}
+						}
+					}
+					//删除发起人的列表记录
+					userSize = len(users)
+					currentIndex := -1
+					for j := 0; j < userSize; j++ {
+						if users[j].Username == current {
+							currentIndex = j
+						}
+					}
+					sponsorMeetingSize = len(users[currentIndex].SponsorMeeting)
+					for j := 0; j < sponsorMeetingSize; j++ {
+						if users[currentIndex].SponsorMeeting[j] == _meeting_ {
+							users[currentIndex].SponsorMeeting = append(users[currentIndex].SponsorMeeting[:j], users[currentIndex].SponsorMeeting[j+1:]...)
+						}
+					}
+					//删除会议
+					meetings = append(meetings[:i], meetings[i+1:]...)
+					log.println("Delete Meeting Success!")
+					return 
+				}
+			}
+		}
+		log.println("Dont have this Meeting")
+		return 
 	},
 }
 
@@ -46,5 +94,6 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
+	//得到会议名称[-meeting meeting]
 	// deleteMeetingCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
