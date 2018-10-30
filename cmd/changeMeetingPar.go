@@ -24,7 +24,6 @@ var changeMeetingParCmd = &cobra.Command{
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
-
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
@@ -32,8 +31,8 @@ to quickly create a Cobra application.`,
 		_meeting, _ := cmd.Flags().GetString("meeting")
 		_par_, _ := cmd.Flags().GetString("par")
 		_command_, _ := cmd.Flags().GetString("command")
-		users = WRITEUSER()
-		meetings = READMEETINGS()
+		users = entity.READUSERS()
+		meetings = entity.READMEETINGS()
 		current = entity.CurrentUserName
 		meetingSize = len(meetings)
 		userSize = len(users)
@@ -81,6 +80,8 @@ to quickly create a Cobra application.`,
 				}
 			}
 		}
+		entity.WRITEUSER(users)
+		entity.WRITEMEETINGS(meetings)
 	},
 }
 
