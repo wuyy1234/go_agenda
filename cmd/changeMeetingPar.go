@@ -34,7 +34,7 @@ to quickly create a Cobra application.`,
 		_command_, _ := cmd.Flags().GetString("command")
 		users = WRITEUSER()
 		meetings = READMEETINGS()
-		current = identity.CurrentUserName
+		current = entity.CurrentUserName
 		meetingSize = len(meetings)
 		for i := 0; i < meetingSize; i++ {
 			if (meetings[i].Title == _meeting_) {
