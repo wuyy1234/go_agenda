@@ -36,6 +36,17 @@ to quickly create a Cobra application.`,
 		meetings = READMEETINGS()
 		current = entity.CurrentUserName
 		meetingSize = len(meetings)
+		userSize = len(users)
+		parIndex := -1
+		for i := 0; i < userSize; i++ {
+			if users[i].Username == _par_ {
+				parIndex = i
+			}
+		}
+		if parIndex == -1 {
+			log.println("Dont have user named " + _par_)
+			return 
+		}
 		for i := 0; i < meetingSize; i++ {
 			if (meetings[i].Title == _meeting_) {
 				if meetings[i].Sponsor == _users_ {
@@ -44,6 +55,12 @@ to quickly create a Cobra application.`,
 						for j := 0; j < parSize; j++ {
 							if meetings[i].Paticipators[j] == _par_ {
 								meetings[i].Paticipators = append(meetings[i].Paticipators[:j], meetings[i].Paticipators[j+1:]...)
+								parMeetingSize = len(users[parIndex].ParticipateMeeting)
+								for k := 0; k < parMeetingSize; k++ {
+									if users[parIndex].ParticipateMeeting[k] == _meeting_ {
+										users[parIndex].ParticipateMeeting = append(users[parIndex].ParticipateMeeting[:k], users[parIndex].ParticipateMeeting[k+1:]...)
+									}
+								}
 								log.println("Delete success!")
 								return 
 							}
