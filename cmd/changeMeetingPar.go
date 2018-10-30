@@ -48,12 +48,16 @@ to quickly create a Cobra application.`,
 		}
 		for i := 0; i < meetingSize; i++ {
 			if (meetings[i].Title == _meeting_) {
-				if meetings[i].Sponsor == _users_ {
-					if _command_ == "a" {
+				//判断是否是会议发起人
+				if meetings[i].Sponsor == current {
+					//删除与会人
+					if _command_ == "d" {
 						parSize = len(meetings[i].Paticipators)
+						//遍历查找与会人，找到就删除，没找到则记录错误日志
 						for j := 0; j < parSize; j++ {
 							if meetings[i].Paticipators[j] == _par_ {
 								meetings[i].Paticipators = append(meetings[i].Paticipators[:j], meetings[i].Paticipators[j+1:]...)
+								//删除该与会人的会议记录
 								parMeetingSize = len(users[parIndex].ParticipateMeeting)
 								for k := 0; k < parMeetingSize; k++ {
 									if users[parIndex].ParticipateMeeting[k] == _meeting_ {
@@ -61,11 +65,15 @@ to quickly create a Cobra application.`,
 									}
 								}
 								log.println("Delete success!")
-								return 
+								entity.WRITEUSER(users)
+								entity.WRITEMEETINGS(meetings)
+								return
 							}
 						}
 						log.println("Dont have particapator name " + _par_);
-					} else {
+					} 
+					//增加与会人
+					else {
 						parSize = len(meetings[i].Paticipators)
 						for j := 0; j < parSize; j++ {
 							if meetings[i].Paticipators[j] == _par_ {
@@ -74,14 +82,18 @@ to quickly create a Cobra application.`,
 						}
 						meetings[i].Paticipators = append(meetings[i].Paticipators, _par_)
 						log.println("Add success!")
+						entity.WRITEUSER(users)
+						entity.WRITEMEETINGS(meetings)
+						return
 					}
 				} else {
 					log.println("Dont have privilege!")
+					return 
 				}
 			}
 		}
-		entity.WRITEUSER(users)
-		entity.WRITEMEETINGS(meetings)
+		log.println("Dont has this Meeting")
+		return
 	},
 }
 
