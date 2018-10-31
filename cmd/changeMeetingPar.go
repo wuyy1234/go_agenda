@@ -42,7 +42,6 @@ to quickly create a Cobra application.`,
 			if user.Username == _par_ {
 				parIndex = i
 			}
-			if 
 		}
 		if parIndex == -1 {
 			log.println("Dont have user named " + _par_)
@@ -57,10 +56,9 @@ to quickly create a Cobra application.`,
 				} 
 				//删除与会人
 				if _command_ == "d" {
-					var empty := false
 					//从会议中删除与会人，找到就删除，没找到则记录错误日志
-					for j, par := range meeting.Participators {
-						if par == _par_ {
+					for j, partic := range meeting.Participators {
+						if partic == _par_ {
 							continue
 						}
 						//从会议中删除与会人
@@ -95,9 +93,7 @@ to quickly create a Cobra application.`,
 						return
 					}
 					log.println("Dont have particapator name " + _par_);
-				} 
-				//增加与会人
-				else {
+				} else {//增加与会人
 					//与会人查重
 					for j, par := meeting.Participators {
 						if par == _par_ {
