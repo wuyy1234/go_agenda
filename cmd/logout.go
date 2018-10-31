@@ -33,11 +33,11 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		if entity.CurrentUserName == "" {
+		if entity.GetCurrentUserName() == "" {
 			log.Println("current user empty,logout failed")
 			return
 		}
-		entity.CurrentUserName = ""
+		entity.SetCurrentUserName("")
 		log.Println("logout success")
 	},
 }

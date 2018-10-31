@@ -38,7 +38,7 @@ to quickly create a Cobra application.`,
 		for i := 0; i < len(users); i++ {
 			if users[i].Username == _username && users[i].Password == _password {
 				log.Println("user login success")
-				entity.CurrentUserName = _username
+				entity.SetCurrentUserName(_username)
 				return
 			}
 		}

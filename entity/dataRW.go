@@ -34,7 +34,26 @@ type Meeting struct {
 }
 
 /*CurrentUserName 当前登陆用户*/
-var CurrentUserName string
+//var CurrentUserName string 弃用，用下面的get和set函数
+
+/*GetCurrentUserName 获取当前登陆用户*/
+func GetCurrentUserName() (username string) {
+	dir, err := os.Getwd()
+	checkerr(err)
+	b, err := ioutil.ReadFile(dir + "/entity/currentUserName.txt")
+	checkerr(err)
+	username = string(b)
+	return username
+}
+
+/*SetCurrentUserName 获取当前正在操作的用户名字*/
+func SetCurrentUserName(username string) {
+	dir, err := os.Getwd()
+	checkerr(err)
+	b := []byte(username)
+	err = ioutil.WriteFile(dir+"/entity/currentUserName.txt", b, 0777)
+	checkerr(err)
+}
 
 /*READUSERS  读取文件*/
 func READUSERS() (user []User) {
@@ -42,11 +61,9 @@ func READUSERS() (user []User) {
 	checkerr(err)
 	b, err := ioutil.ReadFile(dir + "/entity/Users.txt")
 	checkerr(err)
-
 	//json转变为对象
 	var users []User
 	json.Unmarshal(b, &users)
-
 	log.Println("READUSER success")
 	return users
 }
