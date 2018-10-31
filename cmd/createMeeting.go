@@ -62,9 +62,7 @@ to quickly create a Cobra application.`,
 						readyTime.timeID = append(readyTime, time)
 						log.println("Apply Success!")
 						return 
-					}
-					//增加不同的时间
-					else {
+					} else {//增加不同的时间
 						newTime := entity.Time{timeID: [...]var{time}, day: day, month: month}
 						log.println("Apply Success!")
 						return 
@@ -72,9 +70,7 @@ to quickly create a Cobra application.`,
 				}
 			}
 			log.println("Wrong! You should use -command new")
-		}
-		//新建会议事项
-		else {
+		} else { //新建会议事项
 			//名称、时间查重
 			for i, meeting := range meetings {
 				//名称查重
