@@ -29,8 +29,39 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		//_meeting, _ := cmd.Flags().GetString("meeting")
+		_password_, _ := cmd.Flags().GetString("pass")
+		users = entity.READUSERS()
+		meetings = entity.READMEETINGS()
+		current = entity.GetCurrentUserName()
+		for i, user := range users {
+			if user.Username != current {
+				continue
+			}
+			//密码不正确
+			if user.Password != _password_ {
+				log.println("Wrong password!")
+				return
+			}
+			myClearMeeting()
+		}
+		//记录写回
+		entity.WRITEUSER(users)
+		entity.WRITEMEETINGS(meetings)
+		return
 	},
+}
+
+func myClearMeeting () {
+	for i, user := range users {
+		//删除主持的所有会议
+		for j, title := range user.SponsorMeeting {
+			entity.myDeleteMeeting(title)
+		}
+		//退出参加的所有会议
+		for j, title := range user.ParticipateMeeting {
+			entity.myExitMeeting(title)
+		}
+	}
 }
 
 func init() {
@@ -44,6 +75,6 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// clearMeetingCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	clearMeetingCmd.Flags().StringP("meeting", "m", "default meeing", "clear meetings sponored by the current user")
+	//得到用户密码[-pass password]
+	clearMeetingCmd.Flags().StringP("pass", "p", "", "clear meeting")
 }
