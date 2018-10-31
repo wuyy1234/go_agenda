@@ -95,7 +95,7 @@ to quickly create a Cobra application.`,
 					log.println("Dont have particapator name " + _par_);
 				} else {//增加与会人
 					//与会人查重
-					for j, par := meeting.Participators {
+					for j, par :=  meeting.Participators {
 						if par == _par_ {
 							return 
 						}
