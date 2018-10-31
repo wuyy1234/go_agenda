@@ -92,21 +92,40 @@
    * 会议结束时间(end time)
    * 注意，任何用户都无法分身参加多个会议。如果用户已有的会议安排（作为发起者或参与者）与将要创建的会议在时间上重叠 （允许仅有端点重叠的情况），则无法创建该会议。
    * 用户应获得适当的反馈信息，以便得知是成功地创建了新会议，还是在创建过程中出现了某些错误。
-* 使用说明：
+* 使用说明：createMeeting [-meeting meeting] [-Month month] [-day day] [-time time]1/2/3/4 [-command command]update/new 增加新的时间/创建新的会议
 * 运行结果：
+//成功
+```
+go run main.go createMeeting  -m funk_xiao_li -M 1 -d 1 -t 1 -c new
+```
+//更新时间冲突
+```
+go run main.go createMeeting  -m funk_xiao_li -M 1 -d 1 -t 1 -c update
+```
+//创建时间冲突
+```
+go run main.go createMeeting  -m not_funk_xiao_li -M 1 -d 1 -t 1 -c update
+```
+//创建题目冲突
+```
+go run main.go createMeeting  -m funk_xiao_li -M 2 -d 1 -t 1 -c update
 ```
 
-```
 
 ### 增删会议参与者
 
 * 已登录的用户可以向 自己发起的某一会议增加/删除 参与者 。
 * 增加参与者时需要做 时间重叠 判断（允许仅有端点重叠的情况）。
 * 删除会议参与者后，若因此造成会议 参与者 人数为0，则会议也将被删除。
-* 使用说明：
+* 使用说明：changeMeetingPar [-meeting meeting] 指令名称[-command a/d] 用户名称[-par name]
 * 运行结果：
+//成功增加
 ```
-
+go run main.go changeMeetingPar -m funk_xiao_li -c a -p TestUser
+```
+//增加失败，重复增加
+```
+go run main.go changeMeetingPar -m funk_xiao_li -c a -p TestUser
 ```
 
 ### 查询会议
@@ -115,39 +134,44 @@
 * 用户给出所关注时间段的起始时间和终止时间，返回该用户议程中在指定时间范围内找到的所有会议安排的列表。
 * 在列表中给出每一会议的起始时间、终止时间、主题、以及发起者和参与者。
 * 注意，查询会议的结果应包括用户作为 发起者或参与者 的会议。
-* 使用说明：
+* 使用说明：searchMeeting [-meeting meeting]
 * 运行结果：
 ```
-
+go run main.go searchMeeting -m funk_xiao_li
 ```
 
 ### 取消会议
 
 * 已登录的用户可以取消 自己发起 的某一会议安排。
 * 取消会议时，需提供唯一标识：会议主题（title）。
-* 使用说明：
+* 使用说明：deleteMeeting [-meeting meeting]
 * 运行结果：
+//成功取消
 ```
-
+go run main.go deleteMeeting -m funk_xiao_li
+```
+//取消失败
+```
+go run main.go deleteMeeting -m funk_xiao_li
 ```
 
 ### 退出会议
 
 * 已登录的用户可以退出 自己参与 的某一会议安排。
 * 退出会议时，需提供一个唯一标识：会议主题（title）。若因此造成会议 参与者 人数为0，则会议也将被删除。
-* 使用说明：
+* 使用说明：exitMeeting [-meeting meeting]
 * 运行结果：
 ```
-
+go run main.go exitMeeting -m funk_xiao_li
 ```
 
 ### 清空会议
 
 * 已登录的用户可以清空 自己发起 的所有会议安排。
-* 使用说明：
+* 使用说明：clearMeeting [-pass password]
 * 运行结果：
 ```
-
+go run main.go clearMeeting -m funk_xiao_li
 ```
 
 

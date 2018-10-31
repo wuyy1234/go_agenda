@@ -93,5 +93,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	//得到会议名称[-meeting meeting]
-	changeMeetingParCmd.Flags().StringP("meeting", "m", "default meeting", "change meeting participants")
+	deleteMeetingParCmd.Flags().StringP("meeting", "m", "default meeting", "delete meeting participants")
 }

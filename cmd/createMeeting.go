@@ -62,9 +62,7 @@ to quickly create a Cobra application.`,
 						readyTime.timeID = append(readyTime, time)
 						log.println("Apply Success!")
 						return 
-					}
-					//增加不同的时间
-					else {
+					} else {//增加不同的时间
 						newTime := entity.Time{timeID: [...]var{time}, day: day, month: month}
 						log.println("Apply Success!")
 						return 
@@ -72,9 +70,7 @@ to quickly create a Cobra application.`,
 				}
 			}
 			log.println("Wrong! You should use -command new")
-		}
-		//新建会议事项
-		else {
+		} else { //新建会议事项
 			//名称、时间查重
 			for i, meeting := range meetings {
 				//名称查重
@@ -129,9 +125,9 @@ func init() {
 	// is called directly, e.g.:
 	// createMeetingCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	//得到会议名称[-meeting meeting] [-Month month] [-Day day] [-time time]1/2/3/4 [-command command]update/new 增加新的时间/创建新的会议
-	changeMeetingParCmd.Flags().StringP("meeting", "m", "default meeting", "change meeting participants")
-	changeMeetingParCmd.Flags().IntP("month", "m", 1, "change month participants")
-	changeMeetingParCmd.Flags().IntP("day", "d", 1, "change day participants")
-	changeMeetingParCmd.Flags().IntP("time", "t", 1, "change time participants")
-	changeMeetingParCmd.Flags().StringP("command", "c", "a", "change command participants")
+	createMeetingParCmd.Flags().StringP("meeting", "m", "default meeting", "create meeting participants")
+	createMeetingParCmd.Flags().IntP("month", "M", 1, "create month participants")
+	createMeetingParCmd.Flags().IntP("day", "d", 1, "create day participants")
+	createMeetingParCmd.Flags().IntP("time", "t", 1, "create time participants")
+	createMeetingParCmd.Flags().StringP("command", "c", "a", "create command participants")
 }
