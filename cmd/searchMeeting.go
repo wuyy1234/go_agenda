@@ -31,7 +31,53 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("searchMeeting called")
+		sm, _ := cmd.Flags().GetString("startMonth")
+		sd, _ := cmd.Flags().GetString("startDay")
+		em, _ := cmd.Flags().GetString("endMonth")
+		ed, _ := cmd.Flags().GetString("endDay")
+		users = entity.READUSERS()
+		meetings = entity.READMEETINGS()
+		current = entity.CurrentUserName
+		currentIndex := -1
+		//遍历找到当前用户所在位置
+		for i, user := range users {
+			if user.Username == current {
+				currentIndex = i
+				break
+			}
+		}
+		//遍历所有会议
+		for i, meeting := range meetings {
+			for j, time := range meeting.MeetingTime {
+				//在查询期间
+				if  (time.month > sm || (time.month == sm && time.day >= sd)) && (time.month < em || (time.month == em && time.day <= sd)) {
+					var flag = false						//判断是否参与会议或发起会议
+					//判断是否为发起人
+					if meeting.Sponsor == current {
+						log.println("You Sponsor: ")
+						flag = true
+					} 
+					//判断是否为参与者
+					else {
+						for k, par := range meeting.Participators {
+							if par == current {
+								log.println("You Participate: ")
+								flag = true
+							}
+						}
+					}
+					//如果参与了会议，则打印相关信息
+					if flag {
+						log.println("Title: " + meeting.Title + "Sponsor: " + meeting.Sponsor)
+						log.println("Date: " + time.month + "." + time.day)
+						for l, tid := range time.timeID {
+							log.println(tid == 1 ? "10:00~11:00" : tid == 2 ? "11:00~12:00" : tid == 3 ? "15:00~16:00" : "16:00~17:00")
+						}
+						log.println("Participate: " + meeting.Participators)
+					}
+				}
+			}
+		}
 	},
 }
 
