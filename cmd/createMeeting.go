@@ -130,7 +130,7 @@ func init() {
 	// createMeetingCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	//得到会议名称[-meeting meeting] [-Month month] [-Day day] [-time time]1/2/3/4 [-command command]update/new 增加新的时间/创建新的会议
 	createMeetingParCmd.Flags().StringP("meeting", "m", "default meeting", "create meeting participants")
-	createMeetingParCmd.Flags().IntP("month", "m", 1, "create month participants")
+	createMeetingParCmd.Flags().IntP("month", "M", 1, "create month participants")
 	createMeetingParCmd.Flags().IntP("day", "d", 1, "create day participants")
 	createMeetingParCmd.Flags().IntP("time", "t", 1, "create time participants")
 	createMeetingParCmd.Flags().StringP("command", "c", "a", "create command participants")
