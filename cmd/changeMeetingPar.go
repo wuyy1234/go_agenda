@@ -15,6 +15,8 @@
 package cmd
 
 import (
+	"agenda/entity"
+
 	"github.com/spf13/cobra"
 )
 
@@ -45,15 +47,15 @@ to quickly create a Cobra application.`,
 		}
 		if parIndex == -1 {
 			log.println("Dont have user named " + _par_)
-			return 
+			return
 		}
 		for i, meeting := range meetings {
-			if (meeting.Title == _meeting_) {
+			if meeting.Title == _meeting_ {
 				//不是会议发起人，没有权限
 				if meeting.Sponsor != current {
 					log.println("Dont have privilege!")
-					return 
-				} 
+					return
+				}
 				//删除与会人
 				if _command_ == "d" {
 					//从会议中删除与会人，找到就删除，没找到则记录错误日志
@@ -92,12 +94,12 @@ to quickly create a Cobra application.`,
 						entity.WRITEMEETINGS(meetings)
 						return
 					}
-					log.println("Dont have particapator name " + _par_);
-				} else {//增加与会人
+					log.println("Dont have particapator name " + _par_)
+				} else { //增加与会人
 					//与会人查重
-					for j, par :=  meeting.Participators {
+					for j, par := range meeting.Participators {
 						if par == _par_ {
-							return 
+							return
 						}
 					}
 					//在会议中加入与会人
@@ -132,5 +134,5 @@ func init() {
 	changeMeetingParCmd.Flags().StringP("meeting", "m", "default meeting", "change meeting participants")
 	changeMeetingParCmd.Flags().StringP("command", "c", "a", "change command participants")
 	changeMeetingParCmd.Flags().StringP("par", "p", "default participator", "change par participants")
-	
+
 }

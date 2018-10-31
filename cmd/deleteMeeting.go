@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"fmt"
+	"agenda/entity"
 
 	"github.com/spf13/cobra"
 )
@@ -40,11 +40,11 @@ func myDeleteMeeting(_meeting_ string) {
 	meetings = entity.READMEETINGS()
 	current = entity.GetCurrentUserName()
 	for i, meeting := range meetings {
-		if (meeting.Title == _meeting_) {
+		if meeting.Title == _meeting_ {
 			//判断是否是会议发起人
 			if meeting.Sponsor != current {
 				log.println("Dont have privilage!")
-				return 
+				return
 			}
 			//删除所有与会人及发起者的会议记录
 			currentIndex := -1
@@ -73,12 +73,12 @@ func myDeleteMeeting(_meeting_ string) {
 			//记录写回
 			entity.WRITEUSER(users)
 			entity.WRITEMEETINGS(meetings)
-			return 
+			return
 		}
 	}
 	//如果遍历结束都没有返回，证明会议不存在，错误写回日志
 	log.println("Dont have this Meeting")
-	return 
+	return
 }
 
 func init() {

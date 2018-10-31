@@ -15,6 +15,8 @@
 package cmd
 
 import (
+	"agenda/entity"
+
 	"github.com/spf13/cobra"
 )
 
@@ -29,8 +31,8 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		_password_, _ := cmd.Flags().GetString("pass")
-		users = entity.READUSERS()
+		_password, _ := cmd.Flags().GetString("pass")
+		users := entity.READUSERS()
 		meetings = entity.READMEETINGS()
 		current = entity.GetCurrentUserName()
 		for i, user := range users {
@@ -38,11 +40,11 @@ to quickly create a Cobra application.`,
 				continue
 			}
 			//密码不正确
-			if user.Password != _password_ {
+			if user.Password != _password {
 				log.println("Wrong password!")
 				return
 			}
-			myClearMeeting()
+			myClearMeeting(users)
 		}
 		//记录写回
 		entity.WRITEUSER(users)
@@ -51,15 +53,15 @@ to quickly create a Cobra application.`,
 	},
 }
 
-func myClearMeeting () {
+func myClearMeeting(users []entity.User) {
 	for i, user := range users {
 		//删除主持的所有会议
 		for j, title := range user.SponsorMeeting {
-			entity.myDeleteMeeting(title)
+			cmd.myDeleteMeeting(title)
 		}
 		//退出参加的所有会议
 		for j, title := range user.ParticipateMeeting {
-			entity.myExitMeeting(title)
+			cmd.myExitMeeting(title)
 		}
 	}
 }

@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"fmt"
+	"agenda/entity"
 
 	"github.com/spf13/cobra"
 )
@@ -59,13 +59,13 @@ to quickly create a Cobra application.`,
 								return
 							}
 						}
-						readyTime.timeID = append(readyTime, time)
+						readyTime.timeID = append(readyTime.timeID, time)
 						log.println("Apply Success!")
-						return 
-					} else {//增加不同的时间
-						newTime := entity.Time{timeID: [...]var{time}, day: day, month: month}
+						return
+					} else { //增加不同的时间
+						newTime := entity.Time{timeID: [...]int{time}, day: day, month: month}
 						log.println("Apply Success!")
-						return 
+						return
 					}
 				}
 			}
@@ -92,8 +92,8 @@ to quickly create a Cobra application.`,
 					}
 				}
 				//创建新的会议事件并加入会议列表
-				newTime := entity.Time{timeID: [...]var{time}, day: day, month: month}
-				newMeeting := entity.Meeting{Title: title, Sponsor: current, Paticipators: [...]var{}, MeetingTime: [...]var{newTime} }
+				newTime := entity.Time{timeID: [...]int{time}, day: day, month: month}
+				newMeeting := entity.Meeting{Title: title, Sponsor: current, Paticipators: [...]string{}, MeetingTime: [...]int{newTime}}
 				meetings = append(meetings, newMeeting)
 				//为操作者添加会议事件
 				for j, user := range users {
@@ -103,7 +103,7 @@ to quickly create a Cobra application.`,
 					}
 				}
 				log.println("Apply Success! Please add Paticipators!")
-				return 
+				return
 			}
 		}
 		//记录写回
@@ -125,9 +125,9 @@ func init() {
 	// is called directly, e.g.:
 	// createMeetingCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	//得到会议名称[-meeting meeting] [-Month month] [-Day day] [-time time]1/2/3/4 [-command command]update/new 增加新的时间/创建新的会议
-	createMeetingParCmd.Flags().StringP("meeting", "m", "default meeting", "create meeting participants")
-	createMeetingParCmd.Flags().IntP("month", "M", 1, "create month participants")
-	createMeetingParCmd.Flags().IntP("day", "d", 1, "create day participants")
-	createMeetingParCmd.Flags().IntP("time", "t", 1, "create time participants")
-	createMeetingParCmd.Flags().StringP("command", "c", "a", "create command participants")
+	createMeetingCmd.Flags().StringP("meeting", "m", "default meeting", "create meeting participants")
+	createMeetingCmd.Flags().IntP("month", "M", 1, "create month participants")
+	createMeetingCmd.Flags().IntP("day", "d", 1, "create day participants")
+	createMeetingCmd.Flags().IntP("time", "t", 1, "create time participants")
+	createMeetingCmd.Flags().StringP("command", "c", "a", "create command participants")
 }

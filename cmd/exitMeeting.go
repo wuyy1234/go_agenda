@@ -15,7 +15,8 @@
 package cmd
 
 import (
-	"fmt"
+	"agenda/entity"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -35,11 +36,11 @@ to quickly create a Cobra application.`,
 	},
 }
 
-func myExitMeeting (_meeting_ string) {
+func myExitMeeting(_meeting_ string) {
 	users = entity.READUSERS()
 	meetings = entity.READMEETINGS()
 	current = entity.GetCurrentUserName()
-	var flag := false						//标记用户参加会议
+	flag := false //标记用户参加会议
 	for i, user := range users {
 		if user.UserName == current {
 			for j, parMeeting := range user.ParticipateMeeting {
@@ -86,11 +87,12 @@ func myExitMeeting (_meeting_ string) {
 		//记录写回
 		entity.WRITEUSER(users)
 		entity.WRITEMEETINGS(meetings)
-		return 
-	} else{ //说明用户没有参加会议
-		fmt.println("Not Participate Meeting!")
 		return
 	}
+	//说明用户没有参加会议
+	log.Println("Not Participate Meeting!")
+	return
+
 }
 
 func init() {
