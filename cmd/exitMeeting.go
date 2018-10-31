@@ -87,9 +87,7 @@ func myExitMeeting (_meeting_ string) {
 		entity.WRITEUSER(users)
 		entity.WRITEMEETINGS(meetings)
 		return 
-	} 
-	//说明用户没有参加会议
-	else{
+	} else{ //说明用户没有参加会议
 		fmt.println("Not Participate Meeting!")
 		return
 	}
