@@ -24,12 +24,77 @@ var changeMeetingParCmd = &cobra.Command{
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
-
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
+		_meeting, _ := cmd.Flags().GetString("meeting")
+		_par_, _ := cmd.Flags().GetString("par")
+		_command_, _ := cmd.Flags().GetString("command")
+		users = entity.READUSERS()
+		meetings = entity.READMEETINGS()
+		current = entity.CurrentUserName
+		meetingSize = len(meetings)
+		userSize = len(users)
+		parIndex := -1
+		for i := 0; i < userSize; i++ {
+			if users[i].Username == _par_ {
+				parIndex = i
+			}
+		}
+		if parIndex == -1 {
+			log.println("Dont have user named " + _par_)
+			return 
+		}
+		for i := 0; i < meetingSize; i++ {
+			if (meetings[i].Title == _meeting_) {
+				//判断是否是会议发起人
+				if meetings[i].Sponsor == current {
+					//删除与会人
+					if _command_ == "d" {
+						parSize = len(meetings[i].Paticipators)
+						//遍历查找与会人，找到就删除，没找到则记录错误日志
+						for j := 0; j < parSize; j++ {
+							if meetings[i].Paticipators[j] == _par_ {
+								meetings[i].Paticipators = append(meetings[i].Paticipators[:j], meetings[i].Paticipators[j+1:]...)
+								//删除该与会人的会议记录
+								parMeetingSize = len(users[parIndex].ParticipateMeeting)
+								for k := 0; k < parMeetingSize; k++ {
+									if users[parIndex].ParticipateMeeting[k] == _meeting_ {
+										users[parIndex].ParticipateMeeting = append(users[parIndex].ParticipateMeeting[:k], users[parIndex].ParticipateMeeting[k+1:]...)
+									}
+								}
+								log.println("Delete success!")
+								entity.WRITEUSER(users)
+								entity.WRITEMEETINGS(meetings)
+								return
+							}
+						}
+						log.println("Dont have particapator name " + _par_);
+					} 
+					//增加与会人
+					else {
+						parSize = len(meetings[i].Paticipators)
+						for j := 0; j < parSize; j++ {
+							if meetings[i].Paticipators[j] == _par_ {
+								return 
+							}
+						}
+						meetings[i].Paticipators = append(meetings[i].Paticipators, _par_)
+						log.println("Add success!")
+						entity.WRITEUSER(users)
+						entity.WRITEMEETINGS(meetings)
+						return
+					}
+				} else {
+					log.println("Dont have privilege!")
+					return 
+				}
+			}
+		}
+		log.println("Dont has this Meeting")
+		return
 	},
 }
 
@@ -45,5 +110,7 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// changeMeetingParCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	//得到会议名称[-meeting meeting] 指令名称[-command a/d] 用户名称[-par name]
 	changeMeetingParCmd.Flags().StringP("meeting", "m", "default meeting", "change meeting participants")
+	
 }
