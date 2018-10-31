@@ -16,7 +16,7 @@ package cmd
 
 import (
 	"agenda/entity"
-	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -36,9 +36,18 @@ to quickly create a Cobra application.`,
 		_password, _ := cmd.Flags().GetString("password")
 		_email, _ := cmd.Flags().GetString("email")
 		_phone, _ := cmd.Flags().GetString("phone")
-		fmt.Println("register called by "+_username, _password, _email, _phone)
+		log.Println("register called by "+_username, _password, _email, _phone)
+		if _username == "default user" {
+			log.Println("username can't be empty,plz try again")
+			return
+		}
 		users := entity.READUSERS()
-
+		for i := 0; i < len(users); i++ {
+			if users[i].Username == _username {
+				log.Println("username already registered")
+				return
+			}
+		}
 		aUser := entity.User{Username: _username, Password: _password, Email: _email, Phone: _phone}
 		users = append(users, aUser)
 		entity.WRITEUSER(users)
@@ -57,7 +66,7 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// registerCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	registerCmd.Flags().StringP("user", "u", "Anonymous", "Help message for username")
+	registerCmd.Flags().StringP("user", "u", "default user", "Help message for username")
 	registerCmd.Flags().StringP("password", "P", "123456", "password for user") //注意是大写
 	registerCmd.Flags().StringP("email", "e", "123@qq.com", "email of user")
 	registerCmd.Flags().StringP("phone", "p", "18700011134", "phone of the user")
