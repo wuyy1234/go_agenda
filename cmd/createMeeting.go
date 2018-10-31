@@ -31,7 +31,88 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("createMeeting called")
+		title, _ := cmd.Flags().GetString("meeting")
+		month, _ := cmd.Flags().GetString("month")
+		day, _ := cmd.Flags().GetString("day")
+		time, _ := cmd.Flags().GetString("time")
+		com, _ := cmd.Flags().GetString("command")
+		users = entity.READUSERS()
+		meetings = entity.READMEETINGS()
+		current = entity.GetCurrentUserName()
+		//添加新的时间
+		if com == "update" {
+			for i, meeting := range meetings {
+				if meeting.Title != title {
+					continue
+				}
+				if meeting.Sponsor != current {
+					log.println("Wrong! You aren't the Sponsor!")
+					return
+				}
+				for j, readyTime := range meeting.MeetingTime {
+					//增加当天不同的时间段
+					if readyTime.day == day && readyTime.month == month {
+						for k, tid := range readyTime.timeID {
+							//时间重复
+							if tid == time {
+								log.println("Wrong! You had apply this time")
+								return
+							}
+						}
+						readyTime.timeID = append(readyTime, time)
+						log.println("Apply Success!")
+						return 
+					}
+					//增加不同的时间
+					else {
+						newTime := entity.Time{timeID: [...]var{time}, day: day, month: month}
+						log.println("Apply Success!")
+						return 
+					}
+				}
+			}
+			log.println("Wrong! You should use -command new")
+		}
+		//新建会议事项
+		else {
+			//名称、时间查重
+			for i, meeting := range meetings {
+				//名称查重
+				if meeting.Title == title {
+					log.println("Wrong! You should use -command update")
+					return
+				}
+				//时间查重
+				for j, readyTime := range meeting.MeetingTime {
+					//同一天不同时间段查重
+					if readyTime.day == day && readyTime.month == month {
+						for k, tid := range readyTime.timeID {
+							//时间重复
+							if tid == time {
+								log.println("Wrong! Time had applied!")
+								return
+							}
+						}
+					}
+				}
+				//创建新的会议事件并加入会议列表
+				newTime := entity.Time{timeID: [...]var{time}, day: day, month: month}
+				newMeeting := entity.Meeting{Title: title, Sponsor: current, Paticipators: [...]var{}, MeetingTime: [...]var{newTime} }
+				meetings = append(meetings, newMeeting)
+				//为操作者添加会议事件
+				for j, user := range users {
+					if user.Username == current {
+						user.SponsorMeeting = append(user.SponsorMeeting, title)
+						break
+					}
+				}
+				log.println("Apply Success! Please add Paticipators!")
+				return 
+			}
+		}
+		//记录写回
+		entity.WRITEUSER(users)
+		entity.WRITEMEETINGS(meetings)
 	},
 }
 
@@ -47,5 +128,10 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// createMeetingCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	createMeetingCmd.Flags().StringP("meeting", "m", "default", "create meetings")
+	//得到会议名称[-meeting meeting] [-Month month] [-Day day] [-time time]1/2/3/4 [-command command]update/new 增加新的时间/创建新的会议
+	changeMeetingParCmd.Flags().StringP("meeting", "m", "default meeting", "change meeting participants")
+	changeMeetingParCmd.Flags().IntP("month", "m", 1, "change month participants")
+	changeMeetingParCmd.Flags().IntP("day", "d", 1, "change day participants")
+	changeMeetingParCmd.Flags().IntP("time", "t", 1, "change time participants")
+	changeMeetingParCmd.Flags().StringP("command", "c", "a", "change command participants")
 }
