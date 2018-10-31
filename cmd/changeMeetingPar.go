@@ -28,68 +28,91 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-
-		_meeting, _ := cmd.Flags().GetString("meeting")
-		_par_, _ := cmd.Flags().GetString("par")
+		_meeting_, _ := cmd.Flags().GetString("meeting")
 		_command_, _ := cmd.Flags().GetString("command")
+		_par_, _ := cmd.Flags().GetString("par")
 		users = entity.READUSERS()
 		meetings = entity.READMEETINGS()
-		current = entity.CurrentUserName
-		meetingSize = len(meetings)
+		current = entity.GetCurrentUserName()
 		userSize = len(users)
 		parIndex := -1
-		for i := 0; i < userSize; i++ {
-			if users[i].Username == _par_ {
+		currentIndex := -1
+		//定位需要删除的与会人
+		for i, user := range users {
+			if user.Username == _par_ {
 				parIndex = i
 			}
+			if 
 		}
 		if parIndex == -1 {
 			log.println("Dont have user named " + _par_)
 			return 
 		}
-		for i := 0; i < meetingSize; i++ {
-			if (meetings[i].Title == _meeting_) {
-				//判断是否是会议发起人
-				if meetings[i].Sponsor == current {
-					//删除与会人
-					if _command_ == "d" {
-						parSize = len(meetings[i].Paticipators)
-						//遍历查找与会人，找到就删除，没找到则记录错误日志
-						for j := 0; j < parSize; j++ {
-							if meetings[i].Paticipators[j] == _par_ {
-								meetings[i].Paticipators = append(meetings[i].Paticipators[:j], meetings[i].Paticipators[j+1:]...)
-								//删除该与会人的会议记录
-								parMeetingSize = len(users[parIndex].ParticipateMeeting)
-								for k := 0; k < parMeetingSize; k++ {
-									if users[parIndex].ParticipateMeeting[k] == _meeting_ {
-										users[parIndex].ParticipateMeeting = append(users[parIndex].ParticipateMeeting[:k], users[parIndex].ParticipateMeeting[k+1:]...)
+		for i, meeting := range meetings {
+			if (meeting.Title == _meeting_) {
+				//不是会议发起人，没有权限
+				if meeting.Sponsor != current {
+					log.println("Dont have privilege!")
+					return 
+				} 
+				//删除与会人
+				if _command_ == "d" {
+					var empty := false
+					//从会议中删除与会人，找到就删除，没找到则记录错误日志
+					for j, par := range meeting.Participators {
+						if par == _par_ {
+							continue
+						}
+						//从会议中删除与会人
+						meeting.Participators = append(meeting.Participators[:j], meeting.Participators[j+1:]...)
+						//删除该与会人的会议记录
+						for k, parMeeting := range users[parIndex].ParticipateMeeting {
+							if parMeeting == _meeting_ {
+								users[parIndex].ParticipateMeeting = append(users[parIndex].ParticipateMeeting[:k], users[parIndex].ParticipateMeeting[k+1:]...)
+							}
+						}
+						//如果没有与会人
+						if len(meeting.Participators) == 0 {
+							//删除会议发起者的会议事件
+							var spon = meeting.Sponsor
+							for k, user := range users {
+								if user.UserName == spon {
+									for l, sponMeeting := range user.SponsorMeeting {
+										//删除发起的会议
+										if sponMeeting == _meeting_ {
+											user.SponsorMeeting = append(user.SponsorMeeting[:l], user.SponsorMeeting[l+1:]...)
+										}
 									}
 								}
-								log.println("Delete success!")
-								entity.WRITEUSER(users)
-								entity.WRITEMEETINGS(meetings)
-								return
 							}
+							//删除会议
+							meetings = append(meetings[:i], meetings[i+1:]...)
 						}
-						log.println("Dont have particapator name " + _par_);
-					} 
-					//增加与会人
-					else {
-						parSize = len(meetings[i].Paticipators)
-						for j := 0; j < parSize; j++ {
-							if meetings[i].Paticipators[j] == _par_ {
-								return 
-							}
-						}
-						meetings[i].Paticipators = append(meetings[i].Paticipators, _par_)
-						log.println("Add success!")
+						//记录写回
+						log.println("Delete success!")
 						entity.WRITEUSER(users)
 						entity.WRITEMEETINGS(meetings)
 						return
 					}
-				} else {
-					log.println("Dont have privilege!")
-					return 
+					log.println("Dont have particapator name " + _par_);
+				} 
+				//增加与会人
+				else {
+					//与会人查重
+					for j, par := meeting.Participators {
+						if par == _par_ {
+							return 
+						}
+					}
+					//在会议中加入与会人
+					meeting.Paticipators = append(meeting.Paticipators, _par_)
+					//给与会人增加会议事件
+					users[parIndex].ParticipateMeeting = append(users[parIndex].ParticipateMeeting, _meeting_)
+					log.println("Add success!")
+					//记录写回
+					entity.WRITEUSER(users)
+					entity.WRITEMEETINGS(meetings)
+					return
 				}
 			}
 		}
@@ -109,8 +132,9 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// changeMeetingParCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	//得到会议名称[-meeting meeting] 指令名称[-command a/d] 用户名称[-par name]
 	changeMeetingParCmd.Flags().StringP("meeting", "m", "default meeting", "change meeting participants")
+	changeMeetingParCmd.Flags().StringP("command", "c", "a", "change command participants")
+	changeMeetingParCmd.Flags().StringP("par", "p", "default participator", "change par participants")
 	
 }
