@@ -15,7 +15,10 @@
 package cmd
 
 import (
+	//"fmt"
+
 	"agenda/entity"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -33,23 +36,22 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		_userName_, _ := cmd.Flags().GetString("user")
 		_password_, _ := cmd.Flags().GetString("pass")
-		users = entity.READUSERS()
-		meetings = entity.READMEETINGS()
-		for i, user := range users {
+		users := entity.READUSERS()
+		for _, user := range users {
 			if user.Username == _userName_ {
 				//密码匹配
 				if user.Password == _password_ {
 					entity.SetCurrentUserName(_userName_)
-					log.println("Log in Success!")
-					log.println("Welcome! " + _userName_)
+					log.Println("Log in Success!")
+					log.Println("Welcome! " + _userName_)
 					return
 				} else { //密码错误
-					log.println("Warning! Wrong Password")
+					log.Println("Warning! Wrong Password")
 					return
 				}
 			}
 		}
-		log.println("Warning! Wrong UserName")
+		log.Println("Warning! Wrong UserName")
 		return
 	},
 }

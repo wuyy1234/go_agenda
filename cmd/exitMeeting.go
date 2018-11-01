@@ -32,20 +32,25 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		_meeting_, _ := cmd.Flags().GetString("meeting")
-		myExitMeeting(_meeting_)
+		MyExitMeeting(_meeting_)
 	},
 }
 
-func myExitMeeting(_meeting_ string) {
-	users = entity.READUSERS()
-	meetings = entity.READMEETINGS()
-	current = entity.GetCurrentUserName()
+func MyExitMeeting(_meeting_ string) {
+	users := entity.READUSERS()
+	meetings := entity.READMEETINGS()
+	current := entity.GetCurrentUserName()
+	if current == "" {
+		log.Println("Please log in!")
+		return
+	}
+	//charge user participate meeting
 	flag := false //标记用户参加会议
 	for i, user := range users {
-		if user.UserName == current {
+		if user.Username == current {
 			for j, parMeeting := range user.ParticipateMeeting {
 				if parMeeting == _meeting_ {
-					user.ParticipateMeeting = append(user.ParticipateMeeting[:j], user.ParticipateMeeting[j+1:]...)
+					users[i].ParticipateMeeting = append(user.ParticipateMeeting[:j], user.ParticipateMeeting[j+1:]...)
 					flag = true
 					break
 				}
@@ -59,28 +64,31 @@ func myExitMeeting(_meeting_ string) {
 			if meeting.Title != _meeting_ {
 				continue
 			}
-			for j, par := range meeting.Participate {
+			for j, par := range meeting.Participators {
 				//不是与会人
 				if par != current {
 					continue
 				}
-				meeting.Paticipators = append(meeting.Paticipators[:j], meeting.Paticipators[j+1:]...)
+				//delete paticipate from meeting log
+				meetings[i].Participators = append(meeting.Participators[:j], meeting.Participators[j+1:]...)
+				log.Println("Exit " + _meeting_ + " successfully")
 				//如果会议没有与会人
-				if len(meeting.Paticipators) == 0 {
+				if len(meetings[i].Participators) == 0 {
 					//删除会议发起者的会议事件
 					var spon = meeting.Sponsor
 					for k, user := range users {
-						if user.UserName == spon {
+						if user.Username == spon {
 							for l, sponMeeting := range user.SponsorMeeting {
 								//删除发起的会议
 								if sponMeeting == _meeting_ {
-									user.SponsorMeeting = append(user.SponsorMeeting[:l], user.SponsorMeeting[l+1:]...)
+									users[k].SponsorMeeting = append(user.SponsorMeeting[:l], user.SponsorMeeting[l+1:]...)
 								}
 							}
 						}
 					}
 					//删除会议
 					meetings = append(meetings[:i], meetings[i+1:]...)
+					log.Println("Empty meeting! Delete Automitaic!")
 				}
 			}
 		}
@@ -92,7 +100,6 @@ func myExitMeeting(_meeting_ string) {
 	//说明用户没有参加会议
 	log.Println("Not Participate Meeting!")
 	return
-
 }
 
 func init() {
@@ -107,5 +114,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	//得到会议名称[-meeting meeting]
-	exitMeetingParCmd.Flags().StringP("meeting", "m", "default meeting", "exit meeting participants")
+	exitMeetingCmd.Flags().StringP("meeting", "m", "default meeting", "exit meeting participants")
 }

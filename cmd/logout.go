@@ -15,7 +15,8 @@
 package cmd
 
 import (
-	"fmt"
+	"agenda/entity"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -31,11 +32,22 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("logout called")
+		// _userName_, _ := cmd.Flags().GetString("user")
+		// users := entity.READUSERS()
+		// for _, user := range users {
+		// 	if user.Username == _userName_ {
+		entity.SetCurrentUserName("")
+		log.Println("logout success")
+		return
+		// 	}
+		// }
+		// log.Println("Warning! Wrong UserName")
+		// return
 	},
 }
 
 func init() {
+
 	rootCmd.AddCommand(logoutCmd)
 
 	// Here you will define your flags and configuration settings.
@@ -47,5 +59,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	//得到用户名称[-user userName]
-	loginCmd.Flags().StringP("user", "u", "", "log in")
+	//logoutCmd.Flags().StringP("user", "u", "", "log out")
 }

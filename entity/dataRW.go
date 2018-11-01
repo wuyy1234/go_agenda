@@ -20,17 +20,17 @@ type User struct {
 
 /*Time 时间*/
 type Time struct {
-	timeID int //时间段，上午两段下午两段，编号1，2，3，4
-	day    int
-	month  int
+	TimeID []int //时间段，上午两段下午两段，编号1，2，3，4
+	Day    int
+	Month  int
 }
 
 /*Meeting 会议*/
 type Meeting struct {
-	Title        string
-	Sponsor      string   //发起者
-	Paticipators []string //参与者用户名
-	MeetingTime  []Time   //可以包括多个时间段
+	Title         string
+	Sponsor       string   //发起者
+	Participators []string //参与者用户名
+	MeetingTime   []Time   //可以包括多个时间段
 }
 
 /*CurrentUserName 当前登陆用户*/
@@ -64,7 +64,7 @@ func READUSERS() (user []User) {
 	//json转变为对象
 	var users []User
 	json.Unmarshal(b, &users)
-	log.Println("READUSER success")
+	// log.Println("READUSER success")
 	return users
 }
 
@@ -77,7 +77,7 @@ func WRITEUSER(users []User) {
 	b := []byte(data)
 	err = ioutil.WriteFile(dir+"/entity/Users.txt", b, 0777)
 	checkerr(err)
-	log.Println("WRITEUSER success")
+	// log.Println("WRITEUSER success")
 }
 
 /*READMEETINGS 读取会议信息*/
@@ -88,12 +88,13 @@ func READMEETINGS() (meetings []Meeting) {
 	checkerr(err)
 	//json转变为对象
 	json.Unmarshal(b, &meetings)
-	log.Println("READMEETINGS success")
+	// log.Println("READMEETINGS success")
 	return meetings
 }
 
 /*WRITEMEETINGS 写入会议信息*/
 func WRITEMEETINGS(meetings []Meeting) {
+	log.Println(len(meetings))
 	dir, err := os.Getwd()
 	checkerr(err)
 	data, err := json.Marshal(meetings)
@@ -101,7 +102,7 @@ func WRITEMEETINGS(meetings []Meeting) {
 	b := []byte(data)
 	err = ioutil.WriteFile(dir+"/entity/Meetings.txt", b, 0777)
 	checkerr(err)
-	log.Println("WRITEMEETINGS success")
+	// log.Println("WRITEMEETINGS success")
 }
 
 func checkerr(err error) {
