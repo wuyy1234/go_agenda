@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"fmt"
+	"agenda/entity"
 
 	"github.com/spf13/cobra"
 )
@@ -45,11 +45,11 @@ to quickly create a Cobra application.`,
 				return
 			}
 			//清空会议
-			entity.myClearMeeting()
+			cmd.myClearMeeting()
 			//销户
 			users = append(users[:i], users[i+1:]...)
 			//更改当前登陆账户信息
-			entity.SetCurrentUserName("")
+			cmd.SetCurrentUserName("")
 			break
 		}
 		//记录写回

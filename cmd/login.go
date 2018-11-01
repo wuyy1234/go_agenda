@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"fmt"
+	"agenda/entity"
 
 	"github.com/spf13/cobra"
 )
@@ -38,12 +38,12 @@ to quickly create a Cobra application.`,
 		for i, user := range users {
 			if user.Username == _userName_ {
 				//密码匹配
-				if  user.Password == _password_ {
+				if user.Password == _password_ {
 					entity.SetCurrentUserName(_userName_)
 					log.println("Log in Success!")
 					log.println("Welcome! " + _userName_)
 					return
-				} else {//密码错误
+				} else { //密码错误
 					log.println("Warning! Wrong Password")
 					return
 				}

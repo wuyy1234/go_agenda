@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"fmt"
+	"agenda/entity"
 
 	"github.com/spf13/cobra"
 )
@@ -50,8 +50,8 @@ to quickly create a Cobra application.`,
 		for i, meeting := range meetings {
 			for j, time := range meeting.MeetingTime {
 				//在查询期间
-				if  (time.month > sm || (time.month == sm && time.day >= sd)) && (time.month < em || (time.month == em && time.day <= sd)) {
-					var flag = false						//判断是否参与会议或发起会议
+				if (time.month > sm || (time.month == sm && time.day >= sd)) && (time.month < em || (time.month == em && time.day <= sd)) {
+					var flag = false //判断是否参与会议或发起会议
 					//判断是否为发起人
 					if meeting.Sponsor == current {
 						log.println("You Sponsor: ")
@@ -69,7 +69,16 @@ to quickly create a Cobra application.`,
 						log.println("Title: " + meeting.Title + "Sponsor: " + meeting.Sponsor)
 						log.println("Date: " + time.month + "." + time.day)
 						for l, tid := range time.timeID {
-							log.println(tid == 1 ? "10:00~11:00" : tid == 2 ? "11:00~12:00" : tid == 3 ? "15:00~16:00" : "16:00~17:00")
+							switch tid {
+							case 1:
+								log.println("10:00~11:00")
+							case 2:
+								log.println("11:00~12:00")
+							case 3:
+								log.println("15:00~16:00")
+							case 4:
+								log.println("16:00~17:00")
+							}
 						}
 						log.println("Participate: " + meeting.Participators)
 					}
