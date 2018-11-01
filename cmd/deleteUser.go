@@ -31,7 +31,31 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("deleteUser called")
+		_password_, _ := cmd.Flags().GetString("pass")
+		users = entity.READUSERS()
+		meetings = entity.READMEETINGS()
+		current = entity.GetCurrentUserName()
+		for i, user := range users {
+			if user.Username != current {
+				continue
+			}
+			//密码不正确
+			if user.Password != _password_ {
+				log.println("Wrong password!")
+				return
+			}
+			//清空会议
+			entity.myClearMeeting()
+			//销户
+			users = append(users[:i], users[i+1:]...)
+			//更改当前登陆账户信息
+			entity.SetCurrentUserName("")
+			break
+		}
+		//记录写回
+		entity.WRITEUSER(users)
+		entity.WRITEMEETINGS(meetings)
+		return
 	},
 }
 
@@ -46,5 +70,6 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// deleteUserCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	//得到用户密码[-pass password]
+	deleteUserCmd.Flags().StringP("pass", "p", "", "delete user")
 }

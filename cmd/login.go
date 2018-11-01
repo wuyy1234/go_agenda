@@ -15,8 +15,7 @@
 package cmd
 
 import (
-	"agenda/entity"
-	"log"
+	"fmt"
 
 	"github.com/spf13/cobra"
 )
@@ -32,17 +31,26 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		_username, _ := cmd.Flags().GetString("username")
-		_password, _ := cmd.Flags().GetString("password")
-		users := entity.READUSERS()
-		for i := 0; i < len(users); i++ {
-			if users[i].Username == _username && users[i].Password == _password {
-				log.Println("user login success")
-				entity.SetCurrentUserName(_username)
-				return
+		_userName_, _ := cmd.Flags().GetString("user")
+		_password_, _ := cmd.Flags().GetString("pass")
+		users = entity.READUSERS()
+		meetings = entity.READMEETINGS()
+		for i, user := range users {
+			if user.Username == _userName_ {
+				//密码匹配
+				if  user.Password == _password_ {
+					entity.SetCurrentUserName(_userName_)
+					log.println("Log in Success!")
+					log.println("Welcome! " + _userName_)
+					return
+				} else {//密码错误
+					log.println("Warning! Wrong Password")
+					return
+				}
 			}
 		}
-		log.Println("user login failed")
+		log.println("Warning! Wrong UserName")
+		return
 	},
 }
 
@@ -57,7 +65,7 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// loginCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	loginCmd.Flags().StringP("username", "u", "default user", "username used for login")
-	loginCmd.Flags().StringP("password", "p", "123456", "password for login")
+	//得到用户名称[-user userName] 密码[-pass password]
+	loginCmd.Flags().StringP("user", "u", "", "log in")
+	loginCmd.Flags().StringP("pass", "p", "", "log in")
 }
