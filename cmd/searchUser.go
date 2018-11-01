@@ -15,7 +15,10 @@
 package cmd
 
 import (
-	"fmt"
+	//"fmt"
+
+	"agenda/entity"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -32,22 +35,20 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		_userName_, _ := cmd.Flags().GetString("userName")
-		users = entity.READUSERS()
-		meetings = entity.READMEETINGS()
-		current = entity.GetCurrentUserName()
+		users := entity.READUSERS()
 		//显示所有用户信息
-		if _userName_ == _ALL_ {
-			for i, user := range users {
-				log.println("NAME: " + user.Username + "   " + "EMAIL: " + user.Email + "   " + "TEL: " + user.Phone)
+		if _userName_ == "_ALL_" {
+			for _, user := range users {
+				log.Println("NAME: " + user.Username + "   " + "EMAIL: " + user.Email + "   " + "TEL: " + user.Phone)
 			}
 		} else { //搜索特定用户
-			for i, user := range users {
-				if user.userName == _userName_ {
-					log.println("NAME: " + user.Username + "   " + "EMAIL: " + user.Email + "   " + "TEL: " + user.Phone)
+			for _, user := range users {
+				if user.Username == _userName_ {
+					log.Println("NAME: " + user.Username + "   " + "EMAIL: " + user.Email + "   " + "TEL: " + user.Phone)
 				}
 			}
 		}
-		return 
+		return
 	},
 }
 
@@ -63,5 +64,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	//得到用户名称[-user userName/_ALL_] _ALL_显示所有用户，否则搜索特定用户
-	searchUserParCmd.Flags().StringP("user", "u", "", "search user participants")
+	searchUserCmd.Flags().StringP("user", "u", "", "search user participants")
 }

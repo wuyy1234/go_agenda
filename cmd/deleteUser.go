@@ -15,7 +15,10 @@
 package cmd
 
 import (
-	"fmt"
+	//"fmt"
+
+	"agenda/entity"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -32,20 +35,20 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		_password_, _ := cmd.Flags().GetString("pass")
-		users = entity.READUSERS()
-		meetings = entity.READMEETINGS()
-		current = entity.GetCurrentUserName()
+		users := entity.READUSERS()
+		meetings := entity.READMEETINGS()
+		current := entity.GetCurrentUserName()
 		for i, user := range users {
 			if user.Username != current {
 				continue
 			}
 			//密码不正确
 			if user.Password != _password_ {
-				log.println("Wrong password!")
+				log.Println("Wrong password!")
 				return
 			}
 			//清空会议
-			entity.myClearMeeting()
+			MyClearMeeting()
 			//销户
 			users = append(users[:i], users[i+1:]...)
 			//更改当前登陆账户信息

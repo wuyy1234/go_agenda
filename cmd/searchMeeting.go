@@ -15,7 +15,8 @@
 package cmd
 
 import (
-	"fmt"
+	"agenda/entity"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -31,47 +32,51 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		sm, _ := cmd.Flags().GetString("startMonth")
-		sd, _ := cmd.Flags().GetString("startDay")
-		em, _ := cmd.Flags().GetString("endMonth")
-		ed, _ := cmd.Flags().GetString("endDay")
-		users = entity.READUSERS()
-		meetings = entity.READMEETINGS()
-		current = entity.GetCurrentUserName()
-		currentIndex := -1
-		//遍历找到当前用户所在位置
-		for i, user := range users {
-			if user.Username == current {
-				currentIndex = i
-				break
-			}
-		}
+		sm, _ := cmd.Flags().GetInt("startMonth")
+		sd, _ := cmd.Flags().GetInt("startDay")
+		em, _ := cmd.Flags().GetInt("endMonth")
+		ed, _ := cmd.Flags().GetInt("endDay")
+		meetings := entity.READMEETINGS()
+		current := entity.GetCurrentUserName()
 		//遍历所有会议
-		for i, meeting := range meetings {
-			for j, time := range meeting.MeetingTime {
+		for _, meeting := range meetings {
+			for _, time := range meeting.MeetingTime {
 				//在查询期间
-				if  (time.month > sm || (time.month == sm && time.day >= sd)) && (time.month < em || (time.month == em && time.day <= sd)) {
-					var flag = false						//判断是否参与会议或发起会议
+				if (time.Month > sm || (time.Month == sm && time.Day >= sd)) && (time.Month < em || (time.Month == em && time.Day <= ed)) {
+					var flag = false //判断是否参与会议或发起会议
 					//判断是否为发起人
 					if meeting.Sponsor == current {
-						log.println("You Sponsor: ")
+						log.Println("You Sponsor: ")
 						flag = true
 					} else { //判断是否为参与者
-						for k, par := range meeting.Participators {
+						for _, par := range meeting.Participators {
 							if par == current {
-								log.println("You Participate: ")
+								log.Println("You Participate: ")
 								flag = true
 							}
 						}
 					}
 					//如果参与了会议，则打印相关信息
 					if flag {
-						log.println("Title: " + meeting.Title + "Sponsor: " + meeting.Sponsor)
-						log.println("Date: " + time.month + "." + time.day)
-						for l, tid := range time.timeID {
-							log.println(tid == 1 ? "10:00~11:00" : tid == 2 ? "11:00~12:00" : tid == 3 ? "15:00~16:00" : "16:00~17:00")
+						log.Println("Title: " + meeting.Title + "Sponsor: " + meeting.Sponsor)
+						log.Print("Date: ")
+						log.Print(time.Month)
+						log.Print(".")
+						log.Println(time.Day)
+						for _, tid := range time.TimeID {
+							switch {
+							case tid == 1:
+								log.Println("10:00~11:00")
+							case tid == 2:
+								log.Println("11:00~12:00")
+							case tid == 3:
+								log.Println("16:00~17:00")
+							default:
+								log.Println("17:00~18:00")
+							}
 						}
-						log.println("Participate: " + meeting.Participators)
+						log.Print("Participate: ")
+						log.Println(meeting.Participators)
 					}
 				}
 			}
@@ -91,5 +96,8 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	//得到会议名称[-meeting meeting]
-	searchMeetingParCmd.Flags().StringP("meeting", "m", "default meeting", "search meeting participants")
+	searchMeetingCmd.Flags().IntP("startMonth", "sm", 1, "Start Month")
+	searchMeetingCmd.Flags().IntP("startDay", "sd", 1, "Start Day")
+	searchMeetingCmd.Flags().IntP("endMonth", "em", 1, "End Month")
+	searchMeetingCmd.Flags().IntP("endDay", "ed", 1, "End Day")
 }
