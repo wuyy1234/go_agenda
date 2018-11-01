@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"agenda/entity"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -33,12 +34,10 @@ to quickly create a Cobra application.`,
 		_meeting_, _ := cmd.Flags().GetString("meeting")
 		_command_, _ := cmd.Flags().GetString("command")
 		_par_, _ := cmd.Flags().GetString("par")
-		users = entity.READUSERS()
-		meetings = entity.READMEETINGS()
-		current = entity.GetCurrentUserName()
-		userSize = len(users)
+		users := entity.READUSERS()
+		meetings := entity.READMEETINGS()
+		current := entity.GetCurrentUserName()
 		parIndex := -1
-		currentIndex := -1
 		//定位需要删除的与会人
 		for i, user := range users {
 			if user.Username == _par_ {
@@ -46,14 +45,14 @@ to quickly create a Cobra application.`,
 			}
 		}
 		if parIndex == -1 {
-			log.println("Dont have user named " + _par_)
+			log.Println("Dont have user named " + _par_)
 			return
 		}
 		for i, meeting := range meetings {
 			if meeting.Title == _meeting_ {
 				//不是会议发起人，没有权限
 				if meeting.Sponsor != current {
-					log.println("Dont have privilege!")
+					log.Println("Dont have privilege!")
 					return
 				}
 				//删除与会人
@@ -75,8 +74,8 @@ to quickly create a Cobra application.`,
 						if len(meeting.Participators) == 0 {
 							//删除会议发起者的会议事件
 							var spon = meeting.Sponsor
-							for k, user := range users {
-								if user.UserName == spon {
+							for _, user := range users {
+								if user.Username == spon {
 									for l, sponMeeting := range user.SponsorMeeting {
 										//删除发起的会议
 										if sponMeeting == _meeting_ {
@@ -89,24 +88,24 @@ to quickly create a Cobra application.`,
 							meetings = append(meetings[:i], meetings[i+1:]...)
 						}
 						//记录写回
-						log.println("Delete success!")
+						log.Println("Delete success!")
 						entity.WRITEUSER(users)
 						entity.WRITEMEETINGS(meetings)
 						return
 					}
-					log.println("Dont have particapator name " + _par_)
+					log.Println("Dont have particapator name " + _par_)
 				} else { //增加与会人
 					//与会人查重
-					for j, par := range meeting.Participators {
+					for _, par := range meeting.Participators {
 						if par == _par_ {
 							return
 						}
 					}
 					//在会议中加入与会人
-					meeting.Paticipators = append(meeting.Paticipators, _par_)
+					meeting.Participators = append(meeting.Participators, _par_)
 					//给与会人增加会议事件
 					users[parIndex].ParticipateMeeting = append(users[parIndex].ParticipateMeeting, _meeting_)
-					log.println("Add success!")
+					log.Println("Add success!")
 					//记录写回
 					entity.WRITEUSER(users)
 					entity.WRITEMEETINGS(meetings)
@@ -114,7 +113,7 @@ to quickly create a Cobra application.`,
 				}
 			}
 		}
-		log.println("Dont has this Meeting")
+		log.Println("Dont has this Meeting")
 		return
 	},
 }

@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"agenda/entity"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -31,25 +32,24 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		_meeting_, _ := cmd.Flags().GetString("meeting")
-		myDeleteMeeting(_meeting_)
+		MyDeleteMeeting(_meeting_)
 	},
 }
 
-func myDeleteMeeting(_meeting_ string) {
-	users = entity.READUSERS()
-	meetings = entity.READMEETINGS()
-	current = entity.GetCurrentUserName()
+func MyDeleteMeeting(_meeting_ string) {
+	users := entity.READUSERS()
+	meetings := entity.READMEETINGS()
+	current := entity.GetCurrentUserName()
 	for i, meeting := range meetings {
 		if meeting.Title == _meeting_ {
 			//判断是否是会议发起人
 			if meeting.Sponsor != current {
-				log.println("Dont have privilage!")
+				log.Println("Dont have privilage!")
 				return
 			}
 			//删除所有与会人及发起者的会议记录
-			currentIndex := -1
-			for j, par := range meeting.Participators {
-				for k, user := range users {
+			for _, par := range meeting.Participators {
+				for _, user := range users {
 					if user.Username == par {
 						//删除该与会人的会议记录
 						for l, parMeeting := range user.ParticipateMeeting {
@@ -69,7 +69,7 @@ func myDeleteMeeting(_meeting_ string) {
 			}
 			//删除会议
 			meetings = append(meetings[:i], meetings[i+1:]...)
-			log.println("Delete Meeting Success!")
+			log.Println("Delete Meeting Success!")
 			//记录写回
 			entity.WRITEUSER(users)
 			entity.WRITEMEETINGS(meetings)
@@ -77,7 +77,7 @@ func myDeleteMeeting(_meeting_ string) {
 		}
 	}
 	//如果遍历结束都没有返回，证明会议不存在，错误写回日志
-	log.println("Dont have this Meeting")
+	log.Println("Dont have this Meeting")
 	return
 }
 
@@ -93,5 +93,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	//得到会议名称[-meeting meeting]
-	deleteMeetingParCmd.Flags().StringP("meeting", "m", "default meeting", "delete meeting participants")
+	deleteMeetingCmd.Flags().StringP("meeting", "m", "default meeting", "delete meeting participants")
 }

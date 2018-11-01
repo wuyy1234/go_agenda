@@ -20,17 +20,17 @@ type User struct {
 
 /*Time 时间*/
 type Time struct {
-	timeID int //时间段，上午两段下午两段，编号1，2，3，4
-	day    int
-	month  int
+	TimeID []int //时间段，上午两段下午两段，编号1，2，3，4
+	Day    int
+	Month  int
 }
 
 /*Meeting 会议*/
 type Meeting struct {
-	Title        string
-	Sponsor      string   //发起者
-	Paticipators []string //参与者用户名
-	MeetingTime  []Time   //可以包括多个时间段
+	Title         string
+	Sponsor       string   //发起者
+	Participators []string //参与者用户名
+	MeetingTime   []Time   //可以包括多个时间段
 }
 
 /*CurrentUserName 当前登陆用户*/

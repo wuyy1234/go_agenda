@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"agenda/entity"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -33,18 +34,18 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		_password, _ := cmd.Flags().GetString("pass")
 		users := entity.READUSERS()
-		meetings = entity.READMEETINGS()
-		current = entity.GetCurrentUserName()
-		for i, user := range users {
+		meetings := entity.READMEETINGS()
+		current := entity.GetCurrentUserName()
+		for _, user := range users {
 			if user.Username != current {
 				continue
 			}
 			//密码不正确
 			if user.Password != _password {
-				log.println("Wrong password!")
+				log.Println("Wrong password!")
 				return
 			}
-			myClearMeeting(users)
+			MyClearMeeting()
 		}
 		//记录写回
 		entity.WRITEUSER(users)
@@ -53,15 +54,16 @@ to quickly create a Cobra application.`,
 	},
 }
 
-func myClearMeeting(users []entity.User) {
-	for i, user := range users {
+func MyClearMeeting() {
+	users := entity.READUSERS()
+	for _, user := range users {
 		//删除主持的所有会议
-		for j, title := range user.SponsorMeeting {
-			cmd.myDeleteMeeting(title)
+		for _, title := range user.SponsorMeeting {
+			MyDeleteMeeting(title)
 		}
 		//退出参加的所有会议
-		for j, title := range user.ParticipateMeeting {
-			cmd.myExitMeeting(title)
+		for _, title := range user.ParticipateMeeting {
+			MyExitMeeting(title)
 		}
 	}
 }
