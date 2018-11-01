@@ -17,6 +17,7 @@ package cmd
 import (
 	"agenda/entity"
 	"log"
+	"strconv"
 
 	"github.com/spf13/cobra"
 )
@@ -38,6 +39,10 @@ to quickly create a Cobra application.`,
 		ed, _ := cmd.Flags().GetInt("endDay")
 		meetings := entity.READMEETINGS()
 		current := entity.GetCurrentUserName()
+		if current == "" {
+			log.Println("Please log in!")
+			return
+		}
 		//遍历所有会议
 		for _, meeting := range meetings {
 			for _, time := range meeting.MeetingTime {
@@ -58,11 +63,9 @@ to quickly create a Cobra application.`,
 					}
 					//如果参与了会议，则打印相关信息
 					if flag {
-						log.Println("Title: " + meeting.Title + "Sponsor: " + meeting.Sponsor)
-						log.Print("Date: ")
-						log.Print(time.Month)
-						log.Print(".")
-						log.Println(time.Day)
+						log.Println("Title: " + meeting.Title)
+						log.Println("Sponsor: " + meeting.Sponsor)
+						log.Println("Date: " + strconv.Itoa(time.Month) + "." + strconv.Itoa(time.Day))
 						for _, tid := range time.TimeID {
 							switch {
 							case tid == 1:
@@ -77,6 +80,7 @@ to quickly create a Cobra application.`,
 						}
 						log.Print("Participate: ")
 						log.Println(meeting.Participators)
+						log.Println("")
 					}
 				}
 			}
@@ -96,8 +100,8 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	//得到会议名称[-meeting meeting]
-	searchMeetingCmd.Flags().IntP("startMonth", "sm", 1, "Start Month")
-	searchMeetingCmd.Flags().IntP("startDay", "sd", 1, "Start Day")
-	searchMeetingCmd.Flags().IntP("endMonth", "em", 1, "End Month")
-	searchMeetingCmd.Flags().IntP("endDay", "ed", 1, "End Day")
+	searchMeetingCmd.Flags().IntP("startMonth", "S", 1, "Start Month")
+	searchMeetingCmd.Flags().IntP("startDay", "s", 1, "Start Day")
+	searchMeetingCmd.Flags().IntP("endMonth", "E", 1, "End Month")
+	searchMeetingCmd.Flags().IntP("endDay", "e", 1, "End Day")
 }

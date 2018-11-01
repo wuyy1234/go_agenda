@@ -38,6 +38,15 @@ to quickly create a Cobra application.`,
 		meetings := entity.READMEETINGS()
 		current := entity.GetCurrentUserName()
 		parIndex := -1
+		if current == "" {
+			log.Println("Please log in!")
+			return
+		}
+		//provide of adding sponsor to meeting
+		if current == _par_ {
+			log.Println("Cann't add sponsor to meeting as participate")
+			return
+		}
 		//定位需要删除的与会人
 		for i, user := range users {
 			if user.Username == _par_ {
@@ -59,11 +68,11 @@ to quickly create a Cobra application.`,
 				if _command_ == "d" {
 					//从会议中删除与会人，找到就删除，没找到则记录错误日志
 					for j, partic := range meeting.Participators {
-						if partic == _par_ {
+						if partic != _par_ {
 							continue
 						}
 						//从会议中删除与会人
-						meeting.Participators = append(meeting.Participators[:j], meeting.Participators[j+1:]...)
+						meetings[i].Participators = append(meeting.Participators[:j], meeting.Participators[j+1:]...)
 						//删除该与会人的会议记录
 						for k, parMeeting := range users[parIndex].ParticipateMeeting {
 							if parMeeting == _meeting_ {
@@ -71,21 +80,21 @@ to quickly create a Cobra application.`,
 							}
 						}
 						//如果没有与会人
-						if len(meeting.Participators) == 0 {
+						if len(meetings[i].Participators) == 0 {
 							//删除会议发起者的会议事件
-							var spon = meeting.Sponsor
-							for _, user := range users {
-								if user.Username == spon {
+							for k, user := range users {
+								if user.Username == current {
 									for l, sponMeeting := range user.SponsorMeeting {
 										//删除发起的会议
 										if sponMeeting == _meeting_ {
-											user.SponsorMeeting = append(user.SponsorMeeting[:l], user.SponsorMeeting[l+1:]...)
+											users[k].SponsorMeeting = append(user.SponsorMeeting[:l], user.SponsorMeeting[l+1:]...)
 										}
 									}
 								}
 							}
 							//删除会议
 							meetings = append(meetings[:i], meetings[i+1:]...)
+							log.Println("Empty meeting! Delete Automitaic!")
 						}
 						//记录写回
 						log.Println("Delete success!")
@@ -98,11 +107,12 @@ to quickly create a Cobra application.`,
 					//与会人查重
 					for _, par := range meeting.Participators {
 						if par == _par_ {
+							log.Println(_par_ + " was participator! Add failed")
 							return
 						}
 					}
 					//在会议中加入与会人
-					meeting.Participators = append(meeting.Participators, _par_)
+					meetings[i].Participators = append(meeting.Participators, _par_)
 					//给与会人增加会议事件
 					users[parIndex].ParticipateMeeting = append(users[parIndex].ParticipateMeeting, _meeting_)
 					log.Println("Add success!")

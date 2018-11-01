@@ -36,8 +36,11 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		_password_, _ := cmd.Flags().GetString("pass")
 		users := entity.READUSERS()
-		meetings := entity.READMEETINGS()
 		current := entity.GetCurrentUserName()
+		if current == "" {
+			log.Println("Please log in!")
+			return
+		}
 		for i, user := range users {
 			if user.Username != current {
 				continue
@@ -51,13 +54,11 @@ to quickly create a Cobra application.`,
 			MyClearMeeting()
 			//销户
 			users = append(users[:i], users[i+1:]...)
+			log.Println("Delete user successfully.")
 			//更改当前登陆账户信息
 			entity.SetCurrentUserName("")
 			break
 		}
-		//记录写回
-		entity.WRITEUSER(users)
-		entity.WRITEMEETINGS(meetings)
 		return
 	},
 }

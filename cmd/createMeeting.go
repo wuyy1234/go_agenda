@@ -40,9 +40,13 @@ to quickly create a Cobra application.`,
 		users := entity.READUSERS()
 		meetings := entity.READMEETINGS()
 		current := entity.GetCurrentUserName()
+		if current == "" {
+			log.Println("Please log in!")
+			return
+		}
 		//添加新的时间
 		if com == "update" {
-			for _, meeting := range meetings {
+			for i, meeting := range meetings {
 				if meeting.Title != title {
 					continue
 				}
@@ -50,7 +54,7 @@ to quickly create a Cobra application.`,
 					log.Println("Wrong! You aren't the Sponsor!")
 					return
 				}
-				for _, readyTime := range meeting.MeetingTime {
+				for j, readyTime := range meeting.MeetingTime {
 					//增加当天不同的时间段
 					if readyTime.Day == day && readyTime.Month == month {
 						for _, tid := range readyTime.TimeID {
@@ -60,13 +64,19 @@ to quickly create a Cobra application.`,
 								return
 							}
 						}
-						readyTime.TimeID = append(readyTime.TimeID, time)
+						meetings[i].MeetingTime[j].TimeID = append(readyTime.TimeID, time)
 						log.Println("Apply Success!")
+						//记录写回
+						entity.WRITEUSER(users)
+						entity.WRITEMEETINGS(meetings)
 						return
 					} else { //增加不同的时间
 						newTime := entity.Time{TimeID: []int{0: time}, Day: day, Month: month}
-						meeting.MeetingTime = append(meeting.MeetingTime, newTime)
+						meetings[i].MeetingTime = append(meeting.MeetingTime, newTime)
 						log.Println("Apply Success!")
+						//记录写回
+						entity.WRITEUSER(users)
+						entity.WRITEMEETINGS(meetings)
 						return
 					}
 				}
@@ -93,24 +103,29 @@ to quickly create a Cobra application.`,
 						}
 					}
 				}
-				//创建新的会议事件并加入会议列表
-				newTime := entity.Time{TimeID: []int{time}, Day: day, Month: month}
-				newMeeting := entity.Meeting{Title: title, Sponsor: current, Participators: []string{}, MeetingTime: []entity.Time{newTime}}
-				meetings = append(meetings, newMeeting)
-				//为操作者添加会议事件
-				for _, user := range users {
-					if user.Username == current {
-						user.SponsorMeeting = append(user.SponsorMeeting, title)
-						break
-					}
-				}
-				log.Println("Apply Success! Please add Paticipators!")
-				return
 			}
+			//创建新的会议事件并加入会议列表
+			newTime := entity.Time{TimeID: []int{time}, Day: day, Month: month}
+			newMeeting := entity.Meeting{Title: title, Sponsor: current, Participators: []string{}, MeetingTime: []entity.Time{newTime}}
+			meetings = append(meetings, newMeeting)
+			//为操作者添加会议事件
+			for i, user := range users {
+				if user.Username == current {
+					users[i].SponsorMeeting = append(users[i].SponsorMeeting, title)
+					break
+				}
+			}
+			log.Println("Apply Success! Please add Paticipators!")
+			//记录写回
+			entity.WRITEUSER(users)
+			entity.WRITEMEETINGS(meetings)
+			// log.Println(len(meetings))
+			// for _, user := range users {
+			// 	log.Println(user.Username)
+			// 	log.Println(user.SponsorMeeting)
+			// }
+			return
 		}
-		//记录写回
-		entity.WRITEUSER(users)
-		entity.WRITEMEETINGS(meetings)
 	},
 }
 

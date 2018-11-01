@@ -34,8 +34,13 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		_userName_, _ := cmd.Flags().GetString("userName")
+		_userName_, _ := cmd.Flags().GetString("user")
 		users := entity.READUSERS()
+		current := entity.GetCurrentUserName()
+		if current == "" {
+			log.Println("Please log in!")
+			return
+		}
 		//显示所有用户信息
 		if _userName_ == "_ALL_" {
 			for _, user := range users {
@@ -45,10 +50,11 @@ to quickly create a Cobra application.`,
 			for _, user := range users {
 				if user.Username == _userName_ {
 					log.Println("NAME: " + user.Username + "   " + "EMAIL: " + user.Email + "   " + "TEL: " + user.Phone)
+					return
 				}
 			}
+			log.Println("User does not exist")
 		}
-		return
 	},
 }
 

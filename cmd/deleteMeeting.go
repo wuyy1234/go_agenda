@@ -32,6 +32,11 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		_meeting_, _ := cmd.Flags().GetString("meeting")
+		current := entity.GetCurrentUserName()
+		if current == "" {
+			log.Println("Please log in!")
+			return
+		}
 		MyDeleteMeeting(_meeting_)
 	},
 }
@@ -49,27 +54,31 @@ func MyDeleteMeeting(_meeting_ string) {
 			}
 			//删除所有与会人及发起者的会议记录
 			for _, par := range meeting.Participators {
-				for _, user := range users {
+				for j, user := range users {
+					//删除该与会人的会议记录
 					if user.Username == par {
-						//删除该与会人的会议记录
 						for l, parMeeting := range user.ParticipateMeeting {
 							if parMeeting == _meeting_ {
-								user.ParticipateMeeting = append(user.ParticipateMeeting[:l], user.ParticipateMeeting[l+1:]...)
+								users[j].ParticipateMeeting = append(user.ParticipateMeeting[:l], user.ParticipateMeeting[l+1:]...)
 							}
 						}
 					}
-					if user.Username == current {
-						for l, sponMeeting := range user.SponsorMeeting {
-							if sponMeeting == _meeting_ {
-								user.SponsorMeeting = append(user.SponsorMeeting[:l], user.SponsorMeeting[l+1:]...)
-							}
+				}
+			}
+			//delete Sponsor meeting log
+			for j, user := range users {
+				//delete Sponsor meeting log
+				if user.Username == current {
+					for l, sponMeeting := range user.SponsorMeeting {
+						if sponMeeting == _meeting_ {
+							users[j].SponsorMeeting = append(user.SponsorMeeting[:l], user.SponsorMeeting[l+1:]...)
 						}
 					}
 				}
 			}
 			//删除会议
 			meetings = append(meetings[:i], meetings[i+1:]...)
-			log.Println("Delete Meeting Success!")
+			log.Println("Delete " + _meeting_ + " Success!")
 			//记录写回
 			entity.WRITEUSER(users)
 			entity.WRITEMEETINGS(meetings)
