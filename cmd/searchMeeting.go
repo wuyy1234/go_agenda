@@ -17,7 +17,6 @@ package cmd
 import (
 	"agenda/entity"
 	"log"
-
 	"github.com/spf13/cobra"
 )
 
@@ -86,15 +85,6 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(searchMeetingCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// searchMeetingCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
 	//得到会议名称[-meeting meeting]
 	searchMeetingCmd.Flags().IntP("startMonth", "sm", 1, "Start Month")
 	searchMeetingCmd.Flags().IntP("startDay", "sd", 1, "Start Day")

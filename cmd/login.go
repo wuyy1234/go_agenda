@@ -15,11 +15,8 @@
 package cmd
 
 import (
-	//"fmt"
-
 	"agenda/entity"
 	"log"
-
 	"github.com/spf13/cobra"
 )
 
@@ -58,15 +55,6 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(loginCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// loginCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
 	//得到用户名称[-user userName] 密码[-pass password]
 	loginCmd.Flags().StringP("user", "u", "", "log in")
 	loginCmd.Flags().StringP("pass", "p", "", "log in")

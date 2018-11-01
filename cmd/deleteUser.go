@@ -15,11 +15,8 @@
 package cmd
 
 import (
-	//"fmt"
-
 	"agenda/entity"
 	"log"
-
 	"github.com/spf13/cobra"
 )
 
@@ -52,7 +49,7 @@ to quickly create a Cobra application.`,
 			//销户
 			users = append(users[:i], users[i+1:]...)
 			//更改当前登陆账户信息
-			entity.SetCurrentUserName("")
+			cmd.SetCurrentUserName("")
 			break
 		}
 		//记录写回
