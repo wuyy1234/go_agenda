@@ -33,15 +33,21 @@
 * 使用说明：login -u username -p password
 * 运行结果：
 ```
-//成功
-[wyy@centos7 agenda]$ go run main.go login -u wuyy -p 2333
-2018/10/31 19:55:49 READUSER success
-2018/10/31 19:55:49 user login success
+// 成功
+[centos-manager@centos-manager agenda]$ go run main.go login -u wxl -p 123
+2018/11/01 21:15:45 READUSER success
+2018/11/01 21:15:45 Log in Success!
+2018/11/01 21:15:45 Welcome! wxl
 
-//失败
-[wyy@centos7 agenda]$ go run main.go login -u wwyy -p 121212
-2018/10/31 19:55:36 READUSER success
-2018/10/31 19:55:36 user login failed
+// 用户不存在
+[centos-manager@centos-manager agenda]$ go run main.go login -u wrongUser -p 111
+2018/11/01 21:13:59 READUSER success
+2018/11/01 21:13:59 Warning! Wrong UserName
+
+// 密码错误
+[centos-manager@centos-manager agenda]$ go run main.go login -u wxl -p 111
+2018/11/01 21:14:31 READUSER success
+2018/11/01 21:14:31 Warning! Wrong Password
 
 ```
 
@@ -59,13 +65,25 @@
 ### 用户查询
 
 * 已登录的用户可以查看已注册的所有用户的用户名、邮箱及电话信息。
-* 使用说明：userSearch
+* 使用说明：searchUser -u username
 * 运行结果：
 ```
-[wyy@centos7 agenda]$ go run main.go searchUser2018/10/31 19:56:13 READUSER success
-2018/10/31 19:56:13 list all the login users' username&email&phone
-2018/10/31 19:56:13  username:TestUser email:123@qq.com phone:123
-2018/10/31 19:56:13  username:wuyy email:121212@163.com phone:17766727
+// 查询所有用户
+[centos-manager@centos-manager agenda]$ go run main.go searchUser -u _ALL_
+2018/11/01 21:23:53 READUSER success
+2018/11/01 21:23:53 NAME: TestUser   EMAIL: 123@qq.com   TEL: 123
+2018/11/01 21:23:53 NAME: wuyy   EMAIL: 121212@163.com   TEL: 17766727
+2018/11/01 21:23:53 NAME: wxl   EMAIL: 123@163.com   TEL: 12121
+
+// 查询特定用户
+[centos-manager@centos-manager agenda]$ go run main.go searchUser -u wxl
+2018/11/01 21:25:18 READUSER success
+2018/11/01 21:25:18 NAME: wxl   EMAIL: 123@163.com   TEL: 12121
+
+// 查询用户不存在
+[centos-manager@centos-manager agenda]$ go run main.go searchUser -u noUser
+2018/11/01 21:27:25 READUSER success
+2018/11/01 21:27:25 User does not exist
 
 ```
 
@@ -77,9 +95,19 @@
 * 用户账户删除以后：
    * 以该用户为 发起者 的会议将被删除
    * 以该用户为 参与者 的会议将从 参与者 列表中移除该用户。若因此造成会议 参与者 人数为0，则会议也将被删除。
-* 使用说明：
+* 使用说明：deleteUser -p password
 * 运行结果：
 ```
+// 注销成功
+[centos-manager@centos-manager agenda]$ go run main.go deleteUser -p 123456
+2018/11/01 23:10:34 READUSER success
+2018/11/01 23:10:34 READUSER success
+2018/11/01 23:10:34 Delete user successfully.
+
+// 注销失败，密码错误
+[centos-manager@centos-manager agenda]$ go run main.go deleteUser -p 111111
+2018/11/01 23:10:28 READUSER success
+2018/11/01 23:10:28 Wrong password!
 
 ```
 
@@ -92,23 +120,43 @@
    * 会议结束时间(end time)
    * 注意，任何用户都无法分身参加多个会议。如果用户已有的会议安排（作为发起者或参与者）与将要创建的会议在时间上重叠 （允许仅有端点重叠的情况），则无法创建该会议。
    * 用户应获得适当的反馈信息，以便得知是成功地创建了新会议，还是在创建过程中出现了某些错误。
-* 使用说明：createMeeting [-meeting meeting] [-Month month] [-day day] [-time time]1/2/3/4 [-command command]update/new 增加新的时间/创建新的会议
+* 使用说明：createMeeting -m meetingtitle -M month -d day -t [time]1/2/3/4 -c [command]update/new 增加新的时间/创建新的会议
 * 运行结果：
-//成功
 ```
-go run main.go createMeeting  -m funk_xiao_li -M 1 -d 1 -t 1 -c new
-```
-//更新时间冲突
-```
-go run main.go createMeeting  -m funk_xiao_li -M 1 -d 1 -t 1 -c update
-```
-//创建时间冲突
-```
-go run main.go createMeeting  -m not_funk_xiao_li -M 1 -d 1 -t 1 -c update
-```
-//创建题目冲突
-```
-go run main.go createMeeting  -m funk_xiao_li -M 2 -d 1 -t 1 -c update
+// 成功
+[centos-manager@centos-manager agenda]$ go run main.go createMeeting  -m TestMeeting -M 1 -d 1 -t 2 -c new
+2018/11/01 21:41:20 READUSER success
+2018/11/01 21:41:20 READMEETINGS success
+2018/11/01 21:41:20 Apply Success! Please add Paticipators!
+2018/11/01 21:41:20 WRITEUSER success
+2018/11/01 21:41:20 WRITEMEETINGS success
+
+// 更新会议时间成功，会议分两期两天进行
+[centos-manager@centos-manager agenda]$ go run main.go createMeeting  -m TestMeeting -M 1 -d 1 -t 3 -c update
+2018/11/01 22:22:38 READUSER success
+2018/11/01 22:22:38 READMEETINGS success
+2018/11/01 22:22:38 Apply Success!
+2018/11/01 22:22:38 WRITEUSER success
+2018/11/01 22:22:38 WRITEMEETINGS success
+[centos-manager@centos-manager agenda]$ go run main.go createMeeting  -m TestMeeting -M 1 -d 3 -t 1 -c update
+2018/11/01 22:22:53 READUSER success
+2018/11/01 22:22:53 READMEETINGS success
+2018/11/01 22:22:53 Apply Success!
+2018/11/01 22:22:53 WRITEUSER success
+2018/11/01 22:22:53 WRITEMEETINGS success
+
+// 创建题目冲突
+[centos-manager@centos-manager agenda]$ go run main.go createMeeting  -m cheat -M 1 -d 1 -t 1 -c new
+2018/11/01 21:40:53 READUSER success
+2018/11/01 21:40:53 READMEETINGS success
+2018/11/01 21:40:53 Wrong! You should use -command update
+
+// 创建时间冲突
+[centos-manager@centos-manager agenda]$ go run main.go createMeeting  -m TestMeeting -M 1 -d 1 -t 1 -c new
+2018/11/01 21:36:17 READUSER success
+2018/11/01 21:36:17 READMEETINGS success
+2018/11/01 21:36:17 Wrong! Time had applied!
+
 ```
 
 
@@ -117,15 +165,65 @@ go run main.go createMeeting  -m funk_xiao_li -M 2 -d 1 -t 1 -c update
 * 已登录的用户可以向 自己发起的某一会议增加/删除 参与者 。
 * 增加参与者时需要做 时间重叠 判断（允许仅有端点重叠的情况）。
 * 删除会议参与者后，若因此造成会议 参与者 人数为0，则会议也将被删除。
-* 使用说明：changeMeetingPar [-meeting meeting] 指令名称[-command a/d] 用户名称[-par name]
+* 使用说明：changeMeetingPar -m meetingtitle -c a/d 增加/删除 -p username
 * 运行结果：
-//成功增加
 ```
-go run main.go changeMeetingPar -m funk_xiao_li -c a -p TestUser
-```
-//增加失败，重复增加
-```
-go run main.go changeMeetingPar -m funk_xiao_li -c a -p TestUser
+// 成功增加
+[centos-manager@centos-manager agenda]$ go run main.go changeMeetingPar -m TestMeeting -c a -p wuyy
+2018/11/01 22:02:20 READUSER success
+2018/11/01 22:02:20 READMEETINGS success
+2018/11/01 22:02:20 Add success!
+2018/11/01 22:02:20 WRITEUSER success
+2018/11/01 22:02:20 WRITEMEETINGS success
+[centos-manager@centos-manager agenda]$ go run main.go changeMeetingPar -m TestMeeting -c a -p TestUser
+2018/11/01 22:10:53 READUSER success
+2018/11/01 22:10:53 READMEETINGS success
+2018/11/01 22:10:53 Add success!
+2018/11/01 22:10:53 WRITEUSER success
+2018/11/01 22:10:53 WRITEMEETINGS success
+
+
+// 成功删除用户
+[centos-manager@centos-manager agenda]$ go run main.go changeMeetingPar -m TestMeeting -c d -p TestUser
+2018/11/01 22:11:27 READUSER success
+2018/11/01 22:11:27 READMEETINGS success
+2018/11/01 22:11:27 Delete success!
+2018/11/01 22:11:27 WRITEUSER success
+2018/11/01 22:11:27 WRITEMEETINGS success
+
+// 成功删除，会议无用户，自动清除
+[centos-manager@centos-manager agenda]$ go run main.go changeMeetingPar -m TestMeeting -c d -p wuyy
+2018/11/01 22:06:54 READUSER success
+2018/11/01 22:06:54 READMEETINGS success
+2018/11/01 22:06:54 Empty meeting! Delete Automitaic!
+2018/11/01 22:06:54 Delete success!
+2018/11/01 22:06:54 WRITEUSER success
+2018/11/01 22:06:54 WRITEMEETINGS success
+
+// 增删失败，会议不存在
+[centos-manager@centos-manager agenda]$ go run main.go changeMeetingPar -m NoMeeting -c a -p wuyy
+2018/11/01 21:53:49 READUSER success
+2018/11/01 21:53:49 READMEETINGS success
+2018/11/01 21:53:49 Dont has this Meeting
+
+// 增加失败，被邀请用户是会议发起人
+[centos-manager@centos-manager agenda]$ go run main.go changeMeetingPar -m TestMeeting -c a -p wxl
+2018/11/01 22:01:13 READUSER success
+2018/11/01 22:01:13 READMEETINGS success
+2018/11/01 22:01:13 Cann't add sponsor to meeting as participate
+
+// 增加失败，用户不存在
+[centos-manager@centos-manager agenda]$ go run main.go changeMeetingPar -m TestMeeting -c a -p NoUser
+2018/11/01 21:57:09 READUSER success
+2018/11/01 21:57:09 READMEETINGS success
+2018/11/01 21:57:09 Dont have user named NoUser
+
+// 增加失败，重复增加
+[centos-manager@centos-manager agenda]$ go run main.go changeMeetingPar -m TestMeeting -c a -p wuyy
+2018/11/01 22:04:26 READUSER success
+2018/11/01 22:04:26 READMEETINGS success
+2018/11/01 22:04:26 wuyy was participator! Add failed
+
 ```
 
 ### 查询会议
@@ -134,44 +232,93 @@ go run main.go changeMeetingPar -m funk_xiao_li -c a -p TestUser
 * 用户给出所关注时间段的起始时间和终止时间，返回该用户议程中在指定时间范围内找到的所有会议安排的列表。
 * 在列表中给出每一会议的起始时间、终止时间、主题、以及发起者和参与者。
 * 注意，查询会议的结果应包括用户作为 发起者或参与者 的会议。
-* 使用说明：searchMeeting [-meeting meeting]
+* 使用说明：searchMeeting -S startMonth -s startDay -E endMonth -e endDay
 * 运行结果：
 ```
-go run main.go searchMeeting -m funk_xiao_li
+[centos-manager@centos-manager agenda]$ go run main.go searchMeeting -S 1 -s 1 -E 1 -e 3
+2018/11/01 22:25:13 READMEETINGS success
+2018/11/01 22:25:13 You Sponsor: 
+2018/11/01 22:25:13 Title: TestMeeting
+2018/11/01 22:25:13 Sponsor: wxl
+2018/11/01 22:25:13 Date: 1.1
+2018/11/01 22:25:13 11:00~12:00
+2018/11/01 22:25:13 16:00~17:00
+2018/11/01 22:25:13 Participate: 
+2018/11/01 22:25:13 [wuyy]
+2018/11/01 22:25:13 
+2018/11/01 22:25:13 You Sponsor: 
+2018/11/01 22:25:13 Title: TestMeeting
+2018/11/01 22:25:13 Sponsor: wxl
+2018/11/01 22:25:13 Date: 1.3
+2018/11/01 22:25:13 10:00~11:00
+2018/11/01 22:25:13 Participate: 
+2018/11/01 22:25:13 [wuyy]
+
 ```
 
 ### 取消会议
 
 * 已登录的用户可以取消 自己发起 的某一会议安排。
 * 取消会议时，需提供唯一标识：会议主题（title）。
-* 使用说明：deleteMeeting [-meeting meeting]
+* 使用说明：deleteMeeting -m meeting
 * 运行结果：
 //成功取消
 ```
-go run main.go deleteMeeting -m funk_xiao_li
-```
+// 取消成功
+[centos-manager@centos-manager agenda]$ go run main.go deleteMeeting -m TestMeeting1
+2018/11/01 22:35:42 READUSER success
+2018/11/01 22:35:42 READMEETINGS success
+2018/11/01 22:35:42 Delete Meeting Success!
+2018/11/01 22:35:42 WRITEUSER success
+2018/11/01 22:35:42 WRITEMEETINGS success
+
 //取消失败
-```
-go run main.go deleteMeeting -m funk_xiao_li
+[centos-manager@centos-manager agenda]$ go run main.go deleteMeeting -m NoMeeting
+2018/11/01 22:36:35 READUSER success
+2018/11/01 22:36:35 READMEETINGS success
+2018/11/01 22:36:35 Dont have this Meeting
+
 ```
 
 ### 退出会议
 
 * 已登录的用户可以退出 自己参与 的某一会议安排。
 * 退出会议时，需提供一个唯一标识：会议主题（title）。若因此造成会议 参与者 人数为0，则会议也将被删除。
-* 使用说明：exitMeeting [-meeting meeting]
+* 使用说明：exitMeeting -m meeting
 * 运行结果：
 ```
-go run main.go exitMeeting -m funk_xiao_li
+// 退出成功
+[centos-manager@centos-manager agenda]$ go run main.go exitMeeting -m TestMeeting
+2018/11/01 22:32:02 READUSER success
+2018/11/01 22:32:02 READMEETINGS success
+2018/11/01 22:32:02 Exit meeting successfully
+2018/11/01 22:32:02 WRITEUSER success
+2018/11/01 22:32:02 WRITEMEETINGS success
+
+// 未参加会议
+[centos-manager@centos-manager agenda]$ go run main.go exitMeeting -m NoMeeting
+2018/11/01 22:33:24 READUSER success
+2018/11/01 22:33:24 READMEETINGS success
+2018/11/01 22:33:24 Not Participate Meeting!
+
 ```
 
 ### 清空会议
 
 * 已登录的用户可以清空 自己发起 的所有会议安排。
-* 使用说明：clearMeeting [-pass password]
+* 使用说明：clearMeeting -p password
 * 运行结果：
 ```
-go run main.go clearMeeting -m funk_xiao_li
+// 清空成功
+[centos-manager@centos-manager agenda]$ go run main.go clearMeeting -p 123456
+2018/11/01 23:04:09 Delete TestMeeting2 Success!
+2018/11/01 23:04:09 Delete TestMeeting3 Success!
+2018/11/01 23:04:09 Exit TestMeeting1 successfully
+
+// 清空失败，密码错误
+[centos-manager@centos-manager agenda]$ go run main.go clearMeeting -p 111111
+2018/11/01 22:40:13 READUSER success
+2018/11/01 22:40:13 READMEETINGS success
+2018/11/01 22:40:13 Wrong password!
+
 ```
-
-
