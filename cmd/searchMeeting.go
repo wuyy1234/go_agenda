@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"agenda/entity"
+	"go_agenda/entity"
 	"log"
 	"strconv"
 
