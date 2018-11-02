@@ -13,11 +13,6 @@
 // limitations under the License.
 
 package main
-
-import (
-	"github.com/blesswxl/agenda/cmd"
-)
-
 func main() {
 	cmd.Execute()
 
