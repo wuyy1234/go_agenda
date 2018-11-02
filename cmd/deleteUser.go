@@ -13,13 +13,9 @@
 // limitations under the License.
 
 package cmd
-
 import (
-	//"fmt"
-
-	"agenda/entity"
+	"go_agenda/entity"
 	"log"
-
 	"github.com/spf13/cobra"
 )
 
@@ -65,15 +61,6 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(deleteUserCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// deleteUserCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
 	//得到用户密码[-pass password]
 	deleteUserCmd.Flags().StringP("pass", "p", "", "delete user")
 }
