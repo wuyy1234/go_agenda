@@ -6,8 +6,8 @@
 | 王永杰 | 16340227 | wyj16340227 | 负责meeting部分函数及命令测试 |
 
 ## 配置Agenda
-* go get -v github.com/xwy27/Go-Agenda
-* 到对应
+* go get -v github.com/wuyy1234/go_agenda
+* 下载完之后，运行go run 加下面的命令即可运行
 
 ## Agenda 业务需求
 
