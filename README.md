@@ -13,13 +13,13 @@
 * 运行结果：
 ```
 //成功
-[wyy@centos7 agenda]$ go run main.go register -u wuyy -P 2333 -e 121212@163.com -p 17766727
+go_agenda register -u wuyy -P 2333 -e 121212@163.com -p 17766727
 2018/10/31 19:54:39 register called by wuyy 2333 121212@163.com 17766727
 2018/10/31 19:54:39 READUSER success
 2018/10/31 19:54:39 WRITEUSER success
 
 //已注册，失败
-[wyy@centos7 agenda]$ go run main.go register -u wuyy -P 2333 -e 121212@163.com -p 17766727
+go_agenda register -u wuyy -P 2333 -e 121212@163.com -p 17766727
 2018/10/31 20:04:25 register called by wuyy 2333 121212@163.com 17766727
 2018/10/31 20:04:25 READUSER success
 2018/10/31 20:04:25 username already registered
@@ -34,18 +34,18 @@
 * 运行结果：
 ```
 // 成功
-[centos-manager@centos-manager agenda]$ go run main.go login -u wxl -p 123
+go_agenda login -u wxl -p 123
 2018/11/01 21:15:45 READUSER success
 2018/11/01 21:15:45 Log in Success!
 2018/11/01 21:15:45 Welcome! wxl
 
 // 用户不存在
-[centos-manager@centos-manager agenda]$ go run main.go login -u wrongUser -p 111
+go_agenda login -u wrongUser -p 111
 2018/11/01 21:13:59 READUSER success
 2018/11/01 21:13:59 Warning! Wrong UserName
 
 // 密码错误
-[centos-manager@centos-manager agenda]$ go run main.go login -u wxl -p 111
+go_agenda login -u wxl -p 111
 2018/11/01 21:14:31 READUSER success
 2018/11/01 21:14:31 Warning! Wrong Password
 
@@ -57,7 +57,7 @@
 * 使用说明：logout
 * 运行结果：
 ```
-[wyy@centos7 agenda]$ go run main.go logout
+go_agenda logout
 2018/10/31 19:56:22 logout success
 
 ```
@@ -69,19 +69,19 @@
 * 运行结果：
 ```
 // 查询所有用户
-[centos-manager@centos-manager agenda]$ go run main.go searchUser -u _ALL_
+go_agenda searchUser -u _ALL_
 2018/11/01 21:23:53 READUSER success
 2018/11/01 21:23:53 NAME: TestUser   EMAIL: 123@qq.com   TEL: 123
 2018/11/01 21:23:53 NAME: wuyy   EMAIL: 121212@163.com   TEL: 17766727
 2018/11/01 21:23:53 NAME: wxl   EMAIL: 123@163.com   TEL: 12121
 
 // 查询特定用户
-[centos-manager@centos-manager agenda]$ go run main.go searchUser -u wxl
+go_agenda searchUser -u wxl
 2018/11/01 21:25:18 READUSER success
 2018/11/01 21:25:18 NAME: wxl   EMAIL: 123@163.com   TEL: 12121
 
 // 查询用户不存在
-[centos-manager@centos-manager agenda]$ go run main.go searchUser -u noUser
+go_agenda searchUser -u noUser
 2018/11/01 21:27:25 READUSER success
 2018/11/01 21:27:25 User does not exist
 
@@ -99,13 +99,13 @@
 * 运行结果：
 ```
 // 注销成功
-[centos-manager@centos-manager agenda]$ go run main.go deleteUser -p 123456
+go_agenda deleteUser -p 123456
 2018/11/01 23:10:34 READUSER success
 2018/11/01 23:10:34 READUSER success
 2018/11/01 23:10:34 Delete user successfully.
 
 // 注销失败，密码错误
-[centos-manager@centos-manager agenda]$ go run main.go deleteUser -p 111111
+go_agenda deleteUser -p 111111
 2018/11/01 23:10:28 READUSER success
 2018/11/01 23:10:28 Wrong password!
 
@@ -124,7 +124,7 @@
 * 运行结果：
 ```
 // 成功
-[centos-manager@centos-manager agenda]$ go run main.go createMeeting  -m TestMeeting -M 1 -d 1 -t 2 -c new
+go_agenda createMeeting  -m TestMeeting -M 1 -d 1 -t 2 -c new
 2018/11/01 21:41:20 READUSER success
 2018/11/01 21:41:20 READMEETINGS success
 2018/11/01 21:41:20 Apply Success! Please add Paticipators!
@@ -132,13 +132,13 @@
 2018/11/01 21:41:20 WRITEMEETINGS success
 
 // 更新会议时间成功，会议分两期两天进行
-[centos-manager@centos-manager agenda]$ go run main.go createMeeting  -m TestMeeting -M 1 -d 1 -t 3 -c update
+go_agenda createMeeting  -m TestMeeting -M 1 -d 1 -t 3 -c update
 2018/11/01 22:22:38 READUSER success
 2018/11/01 22:22:38 READMEETINGS success
 2018/11/01 22:22:38 Apply Success!
 2018/11/01 22:22:38 WRITEUSER success
 2018/11/01 22:22:38 WRITEMEETINGS success
-[centos-manager@centos-manager agenda]$ go run main.go createMeeting  -m TestMeeting -M 1 -d 3 -t 1 -c update
+go_agenda createMeeting  -m TestMeeting -M 1 -d 3 -t 1 -c update
 2018/11/01 22:22:53 READUSER success
 2018/11/01 22:22:53 READMEETINGS success
 2018/11/01 22:22:53 Apply Success!
@@ -146,13 +146,13 @@
 2018/11/01 22:22:53 WRITEMEETINGS success
 
 // 创建题目冲突
-[centos-manager@centos-manager agenda]$ go run main.go createMeeting  -m cheat -M 1 -d 1 -t 1 -c new
+go_agenda createMeeting  -m cheat -M 1 -d 1 -t 1 -c new
 2018/11/01 21:40:53 READUSER success
 2018/11/01 21:40:53 READMEETINGS success
 2018/11/01 21:40:53 Wrong! You should use -command update
 
 // 创建时间冲突
-[centos-manager@centos-manager agenda]$ go run main.go createMeeting  -m TestMeeting -M 1 -d 1 -t 1 -c new
+go_agenda createMeeting  -m TestMeeting -M 1 -d 1 -t 1 -c new
 2018/11/01 21:36:17 READUSER success
 2018/11/01 21:36:17 READMEETINGS success
 2018/11/01 21:36:17 Wrong! Time had applied!
@@ -169,13 +169,13 @@
 * 运行结果：
 ```
 // 成功增加
-[centos-manager@centos-manager agenda]$ go run main.go changeMeetingPar -m TestMeeting -c a -p wuyy
+go_agenda changeMeetingPar -m TestMeeting -c a -p wuyy
 2018/11/01 22:02:20 READUSER success
 2018/11/01 22:02:20 READMEETINGS success
 2018/11/01 22:02:20 Add success!
 2018/11/01 22:02:20 WRITEUSER success
 2018/11/01 22:02:20 WRITEMEETINGS success
-[centos-manager@centos-manager agenda]$ go run main.go changeMeetingPar -m TestMeeting -c a -p TestUser
+go_agenda changeMeetingPar -m TestMeeting -c a -p TestUser
 2018/11/01 22:10:53 READUSER success
 2018/11/01 22:10:53 READMEETINGS success
 2018/11/01 22:10:53 Add success!
@@ -184,7 +184,7 @@
 
 
 // 成功删除用户
-[centos-manager@centos-manager agenda]$ go run main.go changeMeetingPar -m TestMeeting -c d -p TestUser
+go_agenda changeMeetingPar -m TestMeeting -c d -p TestUser
 2018/11/01 22:11:27 READUSER success
 2018/11/01 22:11:27 READMEETINGS success
 2018/11/01 22:11:27 Delete success!
@@ -192,7 +192,7 @@
 2018/11/01 22:11:27 WRITEMEETINGS success
 
 // 成功删除，会议无用户，自动清除
-[centos-manager@centos-manager agenda]$ go run main.go changeMeetingPar -m TestMeeting -c d -p wuyy
+go_agenda changeMeetingPar -m TestMeeting -c d -p wuyy
 2018/11/01 22:06:54 READUSER success
 2018/11/01 22:06:54 READMEETINGS success
 2018/11/01 22:06:54 Empty meeting! Delete Automitaic!
@@ -201,25 +201,25 @@
 2018/11/01 22:06:54 WRITEMEETINGS success
 
 // 增删失败，会议不存在
-[centos-manager@centos-manager agenda]$ go run main.go changeMeetingPar -m NoMeeting -c a -p wuyy
+go_agenda changeMeetingPar -m NoMeeting -c a -p wuyy
 2018/11/01 21:53:49 READUSER success
 2018/11/01 21:53:49 READMEETINGS success
 2018/11/01 21:53:49 Dont has this Meeting
 
 // 增加失败，被邀请用户是会议发起人
-[centos-manager@centos-manager agenda]$ go run main.go changeMeetingPar -m TestMeeting -c a -p wxl
+go_agenda changeMeetingPar -m TestMeeting -c a -p wxl
 2018/11/01 22:01:13 READUSER success
 2018/11/01 22:01:13 READMEETINGS success
 2018/11/01 22:01:13 Cann't add sponsor to meeting as participate
 
 // 增加失败，用户不存在
-[centos-manager@centos-manager agenda]$ go run main.go changeMeetingPar -m TestMeeting -c a -p NoUser
+go_agenda changeMeetingPar -m TestMeeting -c a -p NoUser
 2018/11/01 21:57:09 READUSER success
 2018/11/01 21:57:09 READMEETINGS success
 2018/11/01 21:57:09 Dont have user named NoUser
 
 // 增加失败，重复增加
-[centos-manager@centos-manager agenda]$ go run main.go changeMeetingPar -m TestMeeting -c a -p wuyy
+go_agenda changeMeetingPar -m TestMeeting -c a -p wuyy
 2018/11/01 22:04:26 READUSER success
 2018/11/01 22:04:26 READMEETINGS success
 2018/11/01 22:04:26 wuyy was participator! Add failed
@@ -235,7 +235,7 @@
 * 使用说明：searchMeeting -S startMonth -s startDay -E endMonth -e endDay
 * 运行结果：
 ```
-[centos-manager@centos-manager agenda]$ go run main.go searchMeeting -S 1 -s 1 -E 1 -e 3
+go_agenda searchMeeting -S 1 -s 1 -E 1 -e 3
 2018/11/01 22:25:13 READMEETINGS success
 2018/11/01 22:25:13 You Sponsor: 
 2018/11/01 22:25:13 Title: TestMeeting
@@ -265,7 +265,7 @@
 //成功取消
 ```
 // 取消成功
-[centos-manager@centos-manager agenda]$ go run main.go deleteMeeting -m TestMeeting1
+go_agenda deleteMeeting -m TestMeeting1
 2018/11/01 22:35:42 READUSER success
 2018/11/01 22:35:42 READMEETINGS success
 2018/11/01 22:35:42 Delete Meeting Success!
@@ -273,7 +273,7 @@
 2018/11/01 22:35:42 WRITEMEETINGS success
 
 //取消失败
-[centos-manager@centos-manager agenda]$ go run main.go deleteMeeting -m NoMeeting
+go_agenda deleteMeeting -m NoMeeting
 2018/11/01 22:36:35 READUSER success
 2018/11/01 22:36:35 READMEETINGS success
 2018/11/01 22:36:35 Dont have this Meeting
@@ -288,7 +288,7 @@
 * 运行结果：
 ```
 // 退出成功
-[centos-manager@centos-manager agenda]$ go run main.go exitMeeting -m TestMeeting
+go_agenda exitMeeting -m TestMeeting
 2018/11/01 22:32:02 READUSER success
 2018/11/01 22:32:02 READMEETINGS success
 2018/11/01 22:32:02 Exit meeting successfully
@@ -296,7 +296,7 @@
 2018/11/01 22:32:02 WRITEMEETINGS success
 
 // 未参加会议
-[centos-manager@centos-manager agenda]$ go run main.go exitMeeting -m NoMeeting
+go_agenda exitMeeting -m NoMeeting
 2018/11/01 22:33:24 READUSER success
 2018/11/01 22:33:24 READMEETINGS success
 2018/11/01 22:33:24 Not Participate Meeting!
@@ -310,13 +310,13 @@
 * 运行结果：
 ```
 // 清空成功
-[centos-manager@centos-manager agenda]$ go run main.go clearMeeting -p 123456
+go_agenda clearMeeting -p 123456
 2018/11/01 23:04:09 Delete TestMeeting2 Success!
 2018/11/01 23:04:09 Delete TestMeeting3 Success!
 2018/11/01 23:04:09 Exit TestMeeting1 successfully
 
 // 清空失败，密码错误
-[centos-manager@centos-manager agenda]$ go run main.go clearMeeting -p 111111
+go_agenda clearMeeting -p 111111
 2018/11/01 22:40:13 READUSER success
 2018/11/01 22:40:13 READMEETINGS success
 2018/11/01 22:40:13 Wrong password!
