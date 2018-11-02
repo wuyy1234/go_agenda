@@ -1,7 +1,9 @@
 # go_agenda
-## 伍宇阳 负责初始化文件读取，构建框架以及写register.go login.go logout.go searchUser.go
-## 吴啸林 负责user部分函数
-## 王永杰 负责meeting部分函数
+| 成员 | 学号 | 负责内容 |
+|:------: | :------: | :-------: |
+| 伍宇阳 | 16340244 | 初始化文件读取，构建框架以及写register.go login.go logout.go searchUser.go |
+| 吴啸林 | 16340241 | 负责user部分函数及命令测试|
+| 王永杰 | 16340227 | 负责meeting部分函数及命令测试 |
 
 ## Agenda 业务需求
 
