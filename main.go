@@ -13,7 +13,7 @@
 // limitations under the License.
 
 package main
-import "agenda/cmd"
+import "go_agenda/cmd"
 func main() {
 	cmd.Execute()
 
