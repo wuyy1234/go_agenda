@@ -54,16 +54,60 @@ to quickly create a Cobra application.`,
 					log.Println("Wrong! You aren't the Sponsor!")
 					return
 				}
+				var size := len(meetings)
+				//设置脏页
+				dirty := [size]int{0}
+				for i := 0; i < size; i++ {
+					dirty[i] = 0;
+				}
+				var dirtyMeeting map[string]string
+				//增加时间段要和所有与会人时间错开
+				for j, par := range meeting.SponsorMeeting {
+					for k, user := range users {
+						if user.Username != par {
+							continue
+						}
+						for l, SponMeeting := range user.SponsorMeeting {
+							dirtyMeeting[SponMeeting] = par;
+						}
+						for l, ParMeeting := range user.SponsorMeeting {
+							dirtyMeeting[ParMeeting] = par;
+						}
+						break
+					}
+				}
+				//增加时间段要和所有主持人时间错开
+				for j, user := range users {
+					if user.Username != current {
+						continue
+					}
+					for k, SponMeeting := range user.SponsorMeeting {
+						dirtyMeeting[SponMeeting] = current;
+					}
+					for k, ParMeeting := range user.SponsorMeeting {
+						dirtyMeeting[ParMeeting] = current;
+					}
+					break
+				}
+				//遍历所有会议，排除和与会人重复的时间段
+				for j, checkMeeting := range meetings {
+					name, has := dirtyMeeting [checkMeeting.Title]
+					if has {
+						for k, readyTime := range checkMeeting.MeetingTime {
+							if checkMeeting.MeetingTime.Day == day && checkMeeting.MeetingTime.Month == month {
+								for k, tid := range readyTime.TimeID {
+									if time == tid {
+										log.Println("Wrong! Has time conflict with " + name)
+										return
+									}
+								}
+							}
+						}
+					}
+				}
 				for j, readyTime := range meeting.MeetingTime {
 					//增加当天不同的时间段
 					if readyTime.Day == day && readyTime.Month == month {
-						for _, tid := range readyTime.TimeID {
-							//时间重复
-							if tid == time {
-								log.Println("Wrong! You had apply this time")
-								return
-							}
-						}
 						meetings[i].MeetingTime[j].TimeID = append(readyTime.TimeID, time)
 						log.Println("Apply Success!")
 						//记录写回
