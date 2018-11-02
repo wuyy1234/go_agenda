@@ -15,7 +15,9 @@
 package cmd
 
 import (
-	"fmt"
+	"go_agenda/entity"
+	"log"
+	"strconv"
 
 	"github.com/spf13/cobra"
 )
@@ -31,7 +33,58 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("searchMeeting called")
+		sm, _ := cmd.Flags().GetInt("startMonth")
+		sd, _ := cmd.Flags().GetInt("startDay")
+		em, _ := cmd.Flags().GetInt("endMonth")
+		ed, _ := cmd.Flags().GetInt("endDay")
+		meetings := entity.READMEETINGS()
+		current := entity.GetCurrentUserName()
+		if current == "" {
+			log.Println("Please log in!")
+			return
+		}
+		//遍历所有会议
+		for _, meeting := range meetings {
+			for _, time := range meeting.MeetingTime {
+				//在查询期间
+				if (time.Month > sm || (time.Month == sm && time.Day >= sd)) && (time.Month < em || (time.Month == em && time.Day <= ed)) {
+					var flag = false //判断是否参与会议或发起会议
+					//判断是否为发起人
+					if meeting.Sponsor == current {
+						log.Println("You Sponsor: ")
+						flag = true
+					} else { //判断是否为参与者
+						for _, par := range meeting.Participators {
+							if par == current {
+								log.Println("You Participate: ")
+								flag = true
+							}
+						}
+					}
+					//如果参与了会议，则打印相关信息
+					if flag {
+						log.Println("Title: " + meeting.Title)
+						log.Println("Sponsor: " + meeting.Sponsor)
+						log.Println("Date: " + strconv.Itoa(time.Month) + "." + strconv.Itoa(time.Day))
+						for _, tid := range time.TimeID {
+							switch {
+							case tid == 1:
+								log.Println("10:00~11:00")
+							case tid == 2:
+								log.Println("11:00~12:00")
+							case tid == 3:
+								log.Println("16:00~17:00")
+							default:
+								log.Println("17:00~18:00")
+							}
+						}
+						log.Print("Participate: ")
+						log.Println(meeting.Participators)
+						log.Println("")
+					}
+				}
+			}
+		}
 	},
 }
 
@@ -46,5 +99,9 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// searchMeetingCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	//得到会议名称[-meeting meeting]
+	searchMeetingCmd.Flags().IntP("startMonth", "S", 1, "Start Month")
+	searchMeetingCmd.Flags().IntP("startDay", "s", 1, "Start Day")
+	searchMeetingCmd.Flags().IntP("endMonth", "E", 1, "End Month")
+	searchMeetingCmd.Flags().IntP("endDay", "e", 1, "End Day")
 }

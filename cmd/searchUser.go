@@ -15,9 +15,8 @@
 package cmd
 
 import (
-	"agenda/entity"
+	"go_agenda/entity"
 	"log"
-
 	"github.com/spf13/cobra"
 )
 
@@ -32,14 +31,26 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if entity.GetCurrentUserName() == "" {
-			log.Println("plz try again after login")
+		_userName_, _ := cmd.Flags().GetString("user")
+		users := entity.READUSERS()
+		current := entity.GetCurrentUserName()
+		if current == "" {
+			log.Println("Please log in!")
 			return
 		}
-		users := entity.READUSERS()
-		log.Println("list all the login users' username&email&phone")
-		for i := 0; i < len(users); i++ {
-			log.Println(string(i) + " username:" + users[i].Username + " email:" + users[i].Email + " phone:" + users[i].Phone)
+		//显示所有用户信息
+		if _userName_ == "_ALL_" {
+			for _, user := range users {
+				log.Println("NAME: " + user.Username + "   " + "EMAIL: " + user.Email + "   " + "TEL: " + user.Phone)
+			}
+		} else { //搜索特定用户
+			for _, user := range users {
+				if user.Username == _userName_ {
+					log.Println("NAME: " + user.Username + "   " + "EMAIL: " + user.Email + "   " + "TEL: " + user.Phone)
+					return
+				}
+			}
+			log.Println("User does not exist")
 		}
 	},
 }
@@ -55,5 +66,6 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// searchUserCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	//得到用户名称[-user userName/_ALL_] _ALL_显示所有用户，否则搜索特定用户
+	searchUserCmd.Flags().StringP("user", "u", "", "search user participants")
 }

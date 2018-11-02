@@ -13,10 +13,9 @@
 // limitations under the License.
 
 package cmd
-
 import (
-	"fmt"
-
+	"go_agenda/entity"
+	"log"
 	"github.com/spf13/cobra"
 )
 
@@ -31,20 +30,37 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("deleteUser called")
+		_password_, _ := cmd.Flags().GetString("pass")
+		users := entity.READUSERS()
+		current := entity.GetCurrentUserName()
+		if current == "" {
+			log.Println("Please log in!")
+			return
+		}
+		for i, user := range users {
+			if user.Username != current {
+				continue
+			}
+			//密码不正确
+			if user.Password != _password_ {
+				log.Println("Wrong password!")
+				return
+			}
+			//清空会议
+			MyClearMeeting()
+			//销户
+			users = append(users[:i], users[i+1:]...)
+			log.Println("Delete user successfully.")
+			//更改当前登陆账户信息
+			entity.SetCurrentUserName("")
+			break
+		}
+		return
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(deleteUserCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// deleteUserCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// deleteUserCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	//得到用户密码[-pass password]
+	deleteUserCmd.Flags().StringP("pass", "p", "", "delete user")
 }

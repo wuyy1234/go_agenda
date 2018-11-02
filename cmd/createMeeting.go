@@ -15,7 +15,8 @@
 package cmd
 
 import (
-	"fmt"
+	"go_agenda/entity"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -32,13 +33,17 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		title, _ := cmd.Flags().GetString("meeting")
-		month, _ := cmd.Flags().GetString("month")
-		day, _ := cmd.Flags().GetString("day")
-		time, _ := cmd.Flags().GetString("time")
+		month, _ := cmd.Flags().GetInt("month")
+		day, _ := cmd.Flags().GetInt("day")
+		time, _ := cmd.Flags().GetInt("time")
 		com, _ := cmd.Flags().GetString("command")
-		users = entity.READUSERS()
-		meetings = entity.READMEETINGS()
-		current = entity.GetCurrentUserName()
+		users := entity.READUSERS()
+		meetings := entity.READMEETINGS()
+		current := entity.GetCurrentUserName()
+		if current == "" {
+			log.Println("Please log in!")
+			return
+		}
 		//添加新的时间
 		if com == "update" {
 			for i, meeting := range meetings {
@@ -46,69 +51,81 @@ to quickly create a Cobra application.`,
 					continue
 				}
 				if meeting.Sponsor != current {
-					log.println("Wrong! You aren't the Sponsor!")
+					log.Println("Wrong! You aren't the Sponsor!")
 					return
 				}
 				for j, readyTime := range meeting.MeetingTime {
 					//增加当天不同的时间段
-					if readyTime.day == day && readyTime.month == month {
-						for k, tid := range readyTime.timeID {
+					if readyTime.Day == day && readyTime.Month == month {
+						for _, tid := range readyTime.TimeID {
 							//时间重复
 							if tid == time {
-								log.println("Wrong! You had apply this time")
+								log.Println("Wrong! You had apply this time")
 								return
 							}
 						}
-						readyTime.timeID = append(readyTime, time)
-						log.println("Apply Success!")
-						return 
-					} else {//增加不同的时间
-						newTime := entity.Time{timeID: [...]var{time}, day: day, month: month}
-						log.println("Apply Success!")
-						return 
+						meetings[i].MeetingTime[j].TimeID = append(readyTime.TimeID, time)
+						log.Println("Apply Success!")
+						//记录写回
+						entity.WRITEUSER(users)
+						entity.WRITEMEETINGS(meetings)
+						return
+					} else { //增加不同的时间
+						newTime := entity.Time{TimeID: []int{0: time}, Day: day, Month: month}
+						meetings[i].MeetingTime = append(meeting.MeetingTime, newTime)
+						log.Println("Apply Success!")
+						//记录写回
+						entity.WRITEUSER(users)
+						entity.WRITEMEETINGS(meetings)
+						return
 					}
 				}
 			}
-			log.println("Wrong! You should use -command new")
+			log.Println("Wrong! You should use -command new")
 		} else { //新建会议事项
 			//名称、时间查重
-			for i, meeting := range meetings {
+			for _, meeting := range meetings {
 				//名称查重
 				if meeting.Title == title {
-					log.println("Wrong! You should use -command update")
+					log.Println("Wrong! You should use -command update")
 					return
 				}
 				//时间查重
-				for j, readyTime := range meeting.MeetingTime {
+				for _, readyTime := range meeting.MeetingTime {
 					//同一天不同时间段查重
-					if readyTime.day == day && readyTime.month == month {
-						for k, tid := range readyTime.timeID {
+					if readyTime.Day == day && readyTime.Month == month {
+						for _, tid := range readyTime.TimeID {
 							//时间重复
 							if tid == time {
-								log.println("Wrong! Time had applied!")
+								log.Println("Wrong! Time had applied!")
 								return
 							}
 						}
 					}
 				}
-				//创建新的会议事件并加入会议列表
-				newTime := entity.Time{timeID: [...]var{time}, day: day, month: month}
-				newMeeting := entity.Meeting{Title: title, Sponsor: current, Paticipators: [...]var{}, MeetingTime: [...]var{newTime} }
-				meetings = append(meetings, newMeeting)
-				//为操作者添加会议事件
-				for j, user := range users {
-					if user.Username == current {
-						user.SponsorMeeting = append(user.SponsorMeeting, title)
-						break
-					}
-				}
-				log.println("Apply Success! Please add Paticipators!")
-				return 
 			}
+			//创建新的会议事件并加入会议列表
+			newTime := entity.Time{TimeID: []int{time}, Day: day, Month: month}
+			newMeeting := entity.Meeting{Title: title, Sponsor: current, Participators: []string{}, MeetingTime: []entity.Time{newTime}}
+			meetings = append(meetings, newMeeting)
+			//为操作者添加会议事件
+			for i, user := range users {
+				if user.Username == current {
+					users[i].SponsorMeeting = append(users[i].SponsorMeeting, title)
+					break
+				}
+			}
+			log.Println("Apply Success! Please add Paticipators!")
+			//记录写回
+			entity.WRITEUSER(users)
+			entity.WRITEMEETINGS(meetings)
+			// log.Println(len(meetings))
+			// for _, user := range users {
+			// 	log.Println(user.Username)
+			// 	log.Println(user.SponsorMeeting)
+			// }
+			return
 		}
-		//记录写回
-		entity.WRITEUSER(users)
-		entity.WRITEMEETINGS(meetings)
 	},
 }
 
@@ -125,9 +142,9 @@ func init() {
 	// is called directly, e.g.:
 	// createMeetingCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	//得到会议名称[-meeting meeting] [-Month month] [-Day day] [-time time]1/2/3/4 [-command command]update/new 增加新的时间/创建新的会议
-	createMeetingParCmd.Flags().StringP("meeting", "m", "default meeting", "create meeting participants")
-	createMeetingParCmd.Flags().IntP("month", "M", 1, "create month participants")
-	createMeetingParCmd.Flags().IntP("day", "d", 1, "create day participants")
-	createMeetingParCmd.Flags().IntP("time", "t", 1, "create time participants")
-	createMeetingParCmd.Flags().StringP("command", "c", "a", "create command participants")
+	createMeetingCmd.Flags().StringP("meeting", "m", "default meeting", "create meeting participants")
+	createMeetingCmd.Flags().IntP("month", "M", 1, "create month participants")
+	createMeetingCmd.Flags().IntP("day", "d", 1, "create day participants")
+	createMeetingCmd.Flags().IntP("time", "t", 1, "create time participants")
+	createMeetingCmd.Flags().StringP("command", "c", "a", "create command participants")
 }
